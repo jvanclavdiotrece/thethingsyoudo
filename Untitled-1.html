@@ -1,0 +1,6001 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Search</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            line-height: 1.6;
+            margin-bottom: 80px;
+        }
+        .search-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: white;
+            padding: 10px;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        input {
+            flex: 1;
+            padding: 10px;
+            font-size: 18px;
+            margin-right: 10px;
+        }
+        .highlight {
+            background-color: yellow;
+        }
+        button {
+            padding: 10px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <p id="content">
+        
+Module 1
+
+
+Page
+94
+of 94
+INTENDED LEARNING OUTCOME
+• Determine the SQL statements that can be directly included in a
+PL/SQL executable block.
+• Manipulate data with DML statements in PL/SQL.
+• Use transaction control statements in PL/SQL.
+• Make use of the INTO clause to hold the values returned by an SQL
+statement.
+SQL Statements in PL/SQL
+You can use the following kinds of SQL statements in PL/SQL:
+• SELECT statements to retrieve data from a database.
+• DML statements, such as INSERT, UPDATE, and DELETE, to
+make changes to the database.
+• Transaction control statements, such as COMMIT, ROLLBACK,
+or SAVEPOINT, to make changes to the database permanent or to
+discard them.
+5
+DDL/DCL Limitations in PL/SQL
+6
+• You cannot directly execute DDL and DCL statements
+because they are constructed and executed at run time—
+that is, they are dynamic.
+• There are times when you may need to run DDL or DCL
+within PL/SQL.
+• The recommended way of working with DDL and DCL
+within PL/SQL is to use Dynamic SQL with the EXECUTE
+IMMEDIATE statement.DDL/DCL Limitations in PL/SQL
+6
+• You cannot directly execute DDL and DCL statements
+because they are constructed and executed at run time—
+that is, they are dynamic.
+• There are times when you may need to run DDL or DCL
+within PL/SQL.
+• The recommended way of working with DDL and DCL
+within PL/SQL is to use Dynamic SQL with the EXECUTE
+IMMEDIATE statement.
+SELECT Statements in PL/SQL
+Retrieve data from a database into a PL/SQL variable with a
+SELECT statement so you can work with the data within
+PL/SQL.
+SELECT select_list
+INTO {variable_name[, variable_name]...
+| record_name}
+FROM table
+[WHERE condition];
+7SELECT Statements in PL/SQL
+Retrieve data from a database into a PL/SQL variable with a
+SELECT statement so you can work with the data within
+PL/SQL.
+SELECT select_list
+INTO {variable_name[, variable_name]...
+| record_name}
+FROM table
+[WHERE condition];
+7
+Using the INTO Clause
+• The INTO clause is mandatory and occurs between the
+SELECT and FROM clauses.
+• It is used to specify the names of PL/SQL variables that
+hold the values that SQL returns from the SELECT clause.
+DECLARE
+v_emp_lname employees.last_name%TYPE;
+BEGIN
+SELECT last_name
+INTO v_emp_lname
+FROM employees
+WHERE employee_id = 100;
+DBMS_OUTPUT.PUT_LINE('His last name is ' || v_emp_lname);
+END;
+8Using the INTO Clause
+• The INTO clause is mandatory and occurs between the
+SELECT and FROM clauses.
+• It is used to specify the names of PL/SQL variables that
+hold the values that SQL returns from the SELECT clause.
+DECLARE
+v_emp_lname employees.last_name%TYPE;
+BEGIN
+SELECT last_name
+INTO v_emp_lname
+FROM employees
+WHERE employee_id = 100;
+DBMS_OUTPUT.PUT_LINE('His last name is ' || v_emp_lname);
+END;
+8
+Retrieving Data in PL/SQL Example
+You must specify one variable for each item selected, and
+the order of the variables must correspond with the order of
+the items selected.
+DECLARE
+v_emp_hiredate employees.hire_date%TYPE;
+v_emp_salary employees.salary%TYPE;
+BEGIN
+9
+hire_date, salarySELECT
+INTO
+FROM
+WHERE
+v_emp_hiredate, v_emp_salary
+employees
+employee_id = 100;
+DBMS_OUTPUT.PUT_LINE('Hiredate: ' || v_emp_hiredate);
+DBMS_OUTPUT.PUT_LINE('Salary: '|| v_emp_salary);
+END;
+Retrieving Data in PL/SQL Embedded Rule
+• SELECT statements within a PL/SQL block fall into the ANSI
+classification of embedded SQL for which the following rule
+applies: embedded queries must return exactly one row.
+• A query that returns more than one row or no rows generates
+an error.
+DECLARE
+v_salary employees.salary%TYPE;
+BEGIN
+SELECT salary INTO v_salary
+FROM employees;
+DBMS_OUTPUT.PUT_LINE(' Salary is : ' || v_salary);
+END;
+10
+ORA-01422: exact fetch returns more than requested number of rows
+Retrieving Data in PL/SQL Example
+Return the sum of the salaries for all the employees in the
+specified department.
+DECLARE
+v_sum_sal NUMBER(10,2);
+v_deptno NUMBER NOT NULL := 60;
+BEGIN
+SELECT SUM(salary) -- group function
+INTO v_sum_sal FROM employees
+WHERE department_id = v_deptno;
+DBMS_OUTPUT.PUT_LINE('Dep #60 Salary Total: ' || v_sum_sal);
+END;
+11
+Create Copy of Original Table
+• It is very important that you do NOT modify the existing
+tables (such as EMPLOYEES and DEPARTMENTS), because
+they will be needed later in the course.
+• The examples in this lesson use the COPY_EMP table.
+• If you haven't already created the COPY_EMP table, do so
+now by executing this SQL statement:
+CREATE TABLE copy_emp
+AS SELECT *
+FROM employees;
+13
+Manipulating Data Using PL/SQL
+Make changes to data by using DML commands within your
+PLSQL block:
+• INSERT
+• UPDATE
+• DELETE
+• MERGE INSERT
+UPDATE
+DELETE
+MERGE
+14Manipulating Data Using PL/SQL
+Make changes to data by using DML commands within your
+PLSQL block:
+• INSERT
+• UPDATE
+• DELETE
+• MERGE INSERT
+UPDATE
+DELETE
+MERGE
+14
+Manipulating Data Using PL/SQL
+15
+• You manipulate data in the database by using the DML
+commands.
+• You can issue the DML commands—INSERT, UPDATE,
+DELETE, and MERGE—without restriction in PL/SQL.
+– The INSERT statement adds new rows to the table.
+– The UPDATE statement modifies existing rows in the table.
+– The DELETE statement removes rows from the table.Manipulating Data Using PL/SQL
+15
+• You manipulate data in the database by using the DML
+commands.
+• You can issue the DML commands—INSERT, UPDATE,
+DELETE, and MERGE—without restriction in PL/SQL.
+– The INSERT statement adds new rows to the table.
+– The UPDATE statement modifies existing rows in the table.
+– The DELETE statement removes rows from the table.
+Manipulating Data Using PL/SQL
+16
+• The MERGE statement selects rows from one table to
+update and/or insert into another table.
+• The decision whether to update or insert into the target
+table is based on a condition in the ON clause.
+– Note: MERGE is a deterministic statement—that is, you
+cannot update the same row of the target table multiple
+times in the same MERGE statement.
+– You must have INSERT and UPDATE object privileges in the
+target table and the SELECT privilege in the source table.Manipulating Data Using PL/SQL
+16
+• The MERGE statement selects rows from one table to
+update and/or insert into another table.
+• The decision whether to update or insert into the target
+table is based on a condition in the ON clause.
+– Note: MERGE is a deterministic statement—that is, you
+cannot update the same row of the target table multiple
+times in the same MERGE statement.
+– You must have INSERT and UPDATE object privileges in the
+target table and the SELECT privilege in the source table.
+Inserting Data
+• The INSERT statement adds new row(s) to a table.
+• Example: Add new employee information to the
+COPY_EMP table.
+• One new row is added to the COPY_EMP table.
+BEGIN
+INSERT INTO copy_emp
+(employee_id, first_name, last_name,
+email,
+hire_date, job_id, salary)
+VALUES (99, 'Ruth', 'Cores',
+'RCORES', SYSDATE, 'AD_ASST', 4000);
+END;
+17Inserting Data
+• The INSERT statement adds new row(s) to a table.
+• Example: Add new employee information to the
+COPY_EMP table.
+• One new row is added to the COPY_EMP table.
+BEGIN
+INSERT INTO copy_emp
+(employee_id, first_name, last_name,
+email,
+hire_date, job_id, salary)
+VALUES (99, 'Ruth', 'Cores',
+'RCORES', SYSDATE, 'AD_ASST', 4000);
+END;
+17
+Updating Data
+• The UPDATE statement modifies existing row(s) in a table.
+• Example: Increase the salary of all employees who are
+stock clerks.
+DECLARE
+v_sal_increase employees.salary%TYPE := 800;
+BEGIN
+UPDATE copy_emp
+SET salary = salary + v_sal_increase
+WHERE job_id = 'ST_CLERK';
+END;
+18Updating Data
+• The UPDATE statement modifies existing row(s) in a table.
+• Example: Increase the salary of all employees who are
+stock clerks.
+DECLARE
+v_sal_increase employees.salary%TYPE := 800;
+BEGIN
+UPDATE copy_emp
+SET salary = salary + v_sal_increase
+WHERE job_id = 'ST_CLERK';
+END;
+18
+Deleting Data
+• The DELETE statement removes row(s) from a table.
+• Example: Delete rows that belong to department 10 from
+the COPY_EMP table.
+employees.department_id%TYPE := 10;
+DECLARE
+v_deptno
+BEGIN
+DELETE FROM copy_emp
+department_id = v_deptno;WHERE
+END;
+19Deleting Data
+• The DELETE statement removes row(s) from a table.
+• Example: Delete rows that belong to department 10 from
+the COPY_EMP table.
+employees.department_id%TYPE := 10;
+DECLARE
+v_deptno
+BEGIN
+DELETE FROM copy_emp
+department_id = v_deptno;WHERE
+END;
+19
+Merging Rows
+• The MERGE statement selects rows from one table to
+update and/or insert into another table.
+• Insert or update rows in the copy_emp table to match
+the employees table.
+BEGIN
+MERGE INTO copy_emp c USING employees e
+ON (e.employee_id = c.employee_id)
+WHEN MATCHED THEN
+UPDATE SET
+c.first_name = e.first_name,
+c.last_name = e.last_name,
+c.email = e.email,
+. . .
+WHEN NOT MATCHED THEN
+INSERT VALUES(e.employee_id, e.first_name,...e.department_id);
+END;
+20
+Getting Information From a Cursor
+• Look again at the DELETE statement in this PL/SQL block.
+• It would be useful to know how many COPY_EMP rows were
+deleted by this statement.
+• To obtain this information, we need to understand cursors.
+employees.department_id%TYPE := 10;
+21
+DECLARE
+v_deptno
+BEGIN
+DELETE FROM
+department_id = v_deptno;
+copy_emp
+WHERE
+END;
+What is a Cursor?
+23
+• Every time an SQL statement is about to be executed, the Oracle server
+allocates a private memory area to store the SQL statement and the data that
+it uses.
+• This memory area is called an implicit cursor.
+• Because this memory area is automatically managed by the
+Oracle server, you have no direct control over it.
+• However, you can use predefined PL/SQL variables, called implicit cursor
+attributes, to find out how many rows were processed by the SQL statement.
+Implicit and Explicit Cursors
+There are two types of cursors:
+• Implicit cursors: Defined automatically by Oracle for all SQL
+data manipulation statements, and for queries that return
+only one row.
+– An implicit cursor is always automatically named “SQL.”
+• Explicit cursors: Defined by the PL/SQL
+programmer for queries that return more
+than one row.
+24
+Cursor Attributes for Implicit Cursors
+• Cursor attributes are automatically declared variables that
+allow you to evaluate what happened when a cursor was last
+used.
+• Attributes for implicit cursors are prefaced with “SQL.”
+• Use these attributes in PL/SQL statements, but not in SQL
+statements.
+• Using cursor attributes, you can test the
+outcome of your SQL statements.
+25
+Cursor Attributes for Implicit Cursors
+26
+Attribute Description
+SQL%FOUND
+Boolean attribute that evaluates to TRUE if the
+most recent SQL statement returned at least
+one row.
+SQL%NOTFOUND
+Boolean attribute that evaluates to TRUE if the
+most recent SQL statement did not return
+even one row.
+SQL%ROWCOUNT
+An integer value that represents the number
+of rows affected by the most recent SQL
+statement.
+Using Implicit Cursor Attributes: Example 1
+• Delete rows that have the specified employee ID from the
+copy_emp table.
+• Print the number of rows deleted.
+DECLARE
+v_deptno copy_emp.department_id%TYPE := 50;
+BEGIN
+DELETE FROM copy_emp
+WHERE department_id = v_deptno;
+DBMS_OUTPUT.PUT_LINE(SQL%ROWCOUNT || ' rows deleted.');
+END;
+27Using Implicit Cursor Attributes: Example 1
+• Delete rows that have the specified employee ID from the
+copy_emp table.
+• Print the number of rows deleted.
+DECLARE
+v_deptno copy_emp.department_id%TYPE := 50;
+BEGIN
+DELETE FROM copy_emp
+WHERE department_id = v_deptno;
+DBMS_OUTPUT.PUT_LINE(SQL%ROWCOUNT || ' rows deleted.');
+END;
+27
+Using Implicit Cursor Attributes: Example 2
+• Update several rows in the COPY_EMP table.
+• Print the number of rows updated.
+employees.salary%TYPE := 800;
+28
+DECLARE
+v_sal_increase
+BEGIN
+UPDATE copy_emp
+SET salary = salary + v_sal_increase
+WHERE job_id = 'ST_CLERK';
+DBMS_OUTPUT.PUT_LINE(SQL%ROWCOUNT || ' rows updated.');
+END;Using Implicit Cursor Attributes: Example 2
+• Update several rows in the COPY_EMP table.
+• Print the number of rows updated.
+employees.salary%TYPE := 800;
+28
+DECLARE
+v_sal_increase
+BEGIN
+UPDATE copy_emp
+SET salary = salary + v_sal_increase
+WHERE job_id = 'ST_CLERK';
+DBMS_OUTPUT.PUT_LINE(SQL%ROWCOUNT || ' rows updated.');
+END;
+Using Implicit Cursor Attributes: Good Practice
+Guideline
+• Look at this code which creates a table and then executes a
+PL/SQL block.
+• Determine what value is inserted into RESULTS.
+CREATE TABLE results (num_rows NUMBER(4));
+29
+BEGIN
+UPDATE
+SET
+WHERE
+copy_emp
+salary = salary + 100
+job_id = 'ST_CLERK';
+INSERT INTO results (num_rows)
+VALUES (SQL%ROWCOUNT);
+END;Using Implicit Cursor Attributes: Good Practice
+Guideline
+• Look at this code which creates a table and then executes a
+PL/SQL block.
+• Determine what value is inserted into RESULTS.
+CREATE TABLE results (num_rows NUMBER(4));
+29
+BEGIN
+UPDATE
+SET
+WHERE
+copy_emp
+salary = salary + 100
+job_id = 'ST_CLERK';
+INSERT INTO results (num_rows)
+VALUES (SQL%ROWCOUNT);
+END;
+Reference
+PL/SQL User's Guide and Reference, Release 9.0.1
+Part No. A89856-01
+Copyright © 1996, 2001, Oracle Corporation. All rights
+reserved.
+Primary Authors: Tom Portfolio, John Russell
+Oracle Academy
+PLSQL S3L2 Retrieving Data in PL/SQL
+PLSQL S3L3 Manipulating Data in PL/SQL
+Copyright © 2019, Oracle and/or its affiliates. All rights reserved.Reference
+PL/SQL User's Guide and Reference, Release 9.0.1
+Part No. A89856-01
+Copyright © 1996, 2001, Oracle Corporation. All rights
+reserved.
+Primary Authors: Tom Portfolio, John Russell
+Oracle Academy
+PLSQL S3L2 Retrieving Data in PL/SQL
+PLSQL S3L3 Manipulating Data in PL/SQL
+Copyright © 2019, Oracle and/or its affiliates. All rights reserved.
+INTENDED LEARNING OUTCOME
+• Identify the uses and types of control structures.
+• Construct an IF statement.
+• Use CASE statements and CASE expressions.
+• Use guidelines when using conditional control structures.
+Controlling the Flow of Execution
+• You can change the logical flow
+of statements within the
+PL/SQL block with a number of
+control structures.
+• This lesson introduces three
+types of PL/SQL control
+structures:
+– Conditional constructs with the
+IF statement
+– CASE expressions
+– LOOP control structures
+FOR
+LOOP
+WHILE
+35
+IF Statements Structure
+• The structure of the PL/SQL IF statement is similar to the
+structure of IF statements in other procedural languages.
+• It enables PL/SQL to perform actions selectively based on
+conditions.
+• Syntax:
+IF condition THEN
+statements;
+[ELSIF condition THEN
+statements;]
+[ELSE
+statements;]
+END IF;
+36IF Statements Structure
+• The structure of the PL/SQL IF statement is similar to the
+structure of IF statements in other procedural languages.
+• It enables PL/SQL to perform actions selectively based on
+conditions.
+• Syntax:
+IF condition THEN
+statements;
+[ELSIF condition THEN
+statements;]
+[ELSE
+statements;]
+END IF;
+36
+IF Statements
+• Condition is a Boolean variable or expression that returns
+TRUE, FALSE, or NULL.
+• THEN introduces a clause that associates the Boolean
+expression with the sequence of statements that follows it.
+IF condition THEN
+statements;
+[ELSIF condition THEN
+statements;]
+[ELSE
+statements;]
+END IF;
+37
+Simple IF Statement
+• This is an example of a simple IF statement with a THEN
+clause.
+• The v_myage variable is initialized to 31.
+DECLARE
+v_myage NUMBER := 31;
+BEGIN
+IF v_myage < 11
+THEN
+DBMS_OUTPUT.PUT_LINE('I am a child');
+END IF;
+END;
+38
+IF THEN ELSE Statement
+• The ELSE clause has been added to this example.
+• The condition has not changed, thus it still evaluates to
+FALSE.
+DECLARE
+v_myage NUMBER:=31;
+BEGIN
+IF v_myage < 11
+THEN
+DBMS_OUTPUT.PUT_LINE('I am a child');
+ELSE
+DBMS_OUTPUT.PUT_LINE('I am not a child');
+END IF;
+END;
+39
+IF ELSIF ELSE Clause
+• The IF statement
+now contains
+multiple ELSIF
+clauses as well as
+an ELSE clause.
+• Notice that the
+ELSIF clauses
+add additional
+conditions.
+DECLARE
+v_myage NUMBER := 31; BEGIN
+IF v_myage < 11 THEN
+DBMS_OUTPUT.PUT_LINE('I am a child');
+ELSIF v_myage < 20 THEN
+DBMS_OUTPUT.PUT_LINE('I am young');
+ELSIF v_myage < 30 THEN
+40
+twenties');
+thirties');
+DBMS_OUTPUT.PUT_LINE('I am in my
+ELSIF v_myage < 40
+THEN
+DBMS_OUTPUT.PUT_LINE('I am in my
+ELSE
+DBMS_OUTPUT.PUT_LINE('I am mature');
+END IF;
+END;
+IF Statement with Multiple Expressions
+• An IF statement can have multiple conditional
+expressions related with logical operators, such as AND,
+OR, and NOT.
+• This example uses the AND operator.
+• Therefore, it evaluates to TRUE only if both BOTH the first
+name and age conditions are evaluated as TRUE.
+DECLARE
+v_myage NUMBER := 31;
+v_myfirstname VARCHAR2(11) := 'Christopher';
+BEGIN
+IF v_myfirstname ='Christopher' AND v_myage < 11
+THEN
+DBMS_OUTPUT.PUT_LINE('I am a child named Christopher');
+END IF;
+END;
+41
+NULL Values in IF Statements
+• In this example, the v_myage variable is declared but is
+not initialized.
+• The condition in the IF statement returns NULL, which is
+neither TRUE nor FALSE.
+• In such a case, the control goes to the ELSE statement
+because, just NULL is not TRUE.
+DECLARE
+v_myage NUMBER;
+BEGIN
+IF v_myage < 11
+THEN
+DBMS_OUTPUT.PUT_LINE('I am a child');
+ELSE
+DBMS_OUTPUT.PUT_LINE('I am not a child');
+END IF;
+END;
+42
+Handling Nulls
+When working with nulls, you can avoid some common
+mistakes by keeping in mind the following rules:
+• Simple comparisons involving nulls always yield NULL.
+• Applying the logical operator NOT to a null yields NULL.
+• In conditional control statements, if a condition yields
+NULL, it behaves just like a FALSE, and the associated
+sequence of statements is not executed.
+43
+Handling Nulls Example
+• In this example, you might expect the sequence of
+statements to execute because a and b seem equal.
+• But, NULL is unknown, so we don't know if a and b are
+equal.
+• The IF condition yields NULL and the THEN clause is
+bypassed, with control going to the line following the
+THEN clause.
+a.:= NULL;
+b.:= NULL;
+...
+IF a = b THEN ... -- yields NULL, not TRUE and the
+sequence of statements is not executed
+END IF;
+44
+Using a CASE Statement
+• Look at this IF statement. What do you notice?
+• All the conditions test the same variable v_numvar.
+• And the coding is very repetitive: v_numvar is coded
+many times.
+NUMBER;
+46
+DECLARE
+v_numvar
+BEGIN
+...
+IF v_numvar = 5 THEN statement_1; statement_2;
+ELSIF v_numvar = 10 THEN statement_3;
+ELSIF v_numvar = 12 THEN statement_4; statement_5;
+ELSIF v_numvar = 27 THEN statement_6;
+ELSIF v_numvar ... – and so on
+ELSE statement_15;
+END IF; ...
+END;
+Using a CASE Statement
+• Here is the same logic, but using a CASE statement.
+• It is much easier to read. v_numvar is written only
+once.
+NUMBER;
+47
+DECLARE
+v_numvar
+BEGIN
+...
+CASE v_numvar
+WHEN 5 THEN statement_1; statement_2;
+WHEN 10 THEN statement_3;
+WHEN 12 THEN statement_4; statement_5;
+WHEN 27 THEN statement_6;
+WHEN ... – and so on
+ELSE statement_15;
+END CASE;
+...
+END;
+CASE Statements: An Example
+NUMBER := 15;
+VARCHAR2(50);
+48
+DECLARE
+v_num
+v_txt
+BEGIN
+CASE v_num
+WHEN 20 THEN v_txt := 'number equals 20';
+WHEN 17 THEN v_txt := 'number equals 17';
+WHEN 15 THEN v_txt := 'number equals 15';
+WHEN 13 THEN v_txt := 'number equals 13';
+WHEN 10 THEN v_txt := 'number equals 10';
+ELSE v_txt := 'some other number';
+END CASE;
+DBMS_OUTPUT.PUT_LINE(v_txt);
+END;
+A simple example to demonstrate the CASE logic.
+Searched CASE Statements
+NUMBER := 15;
+VARCHAR2(50);
+49
+DECLARE
+v_num
+v_txt
+BEGIN
+CASE
+WHEN v_num > 20 THEN v_txt := 'greater than 20';
+WHEN v_num > 15 THEN v_txt := 'greater than 15';
+ELSE v_txt := 'less than 16';
+END CASE;
+DBMS_OUTPUT.PUT_LINE(v_txt);
+END;
+• You can use CASE statements to test for non-equality
+conditions such as <, >, >=, etc.
+• These are called searched CASE statements.
+• The syntax is virtually identical to an equivalent IF
+statement.
+Using a CASE Expression
+• You want to assign a value to one variable that depends on
+the value in another variable.
+• Look at this IF statement.
+• Again, the coding is very repetitive.
+VARCHAR2(15);
+NUMBER;
+50
+DECLARE
+v_out_var
+v_in_var
+BEGIN
+...
+IF v_in_var = 1 THEN v_out_var := 'Low value';
+ELSIF v_in_var = 50 THEN v_out_var := 'Middle value';
+ELSIF v_in_var = 99 THEN v_out_var := 'High value';
+ELSE v_out_var := 'Other value';
+END IF;
+...
+END;
+Using a CASE Expression
+Here is the same logic, but using a CASE expression:
+VARCHAR2(15);
+NUMBER;
+51
+DECLARE
+v_out_var
+v_in_var
+BEGIN
+...
+v_out_var := CASE v_in_var
+WHEN 1 THEN 'Low value'
+WHEN 50 THEN 'Middle value'
+WHEN 99 THEN 'High value'
+ELSE 'Other value'
+END;
+...
+END;
+CASE Expression Syntax
+• A CASE expression selects one of a number of results and
+assigns it to a variable.
+• In the syntax, expressionN can be a literal value, such
+as 50, or an expression, such as (27+23) or
+(v_other_var*2).
+variable_name :=
+CASE selector
+WHEN expression1 THEN result1
+WHEN expression2 THEN result2
+...
+WHEN expressionN THEN resultN
+[ELSE resultN+1]
+END;
+52
+What would be the result of this code if v_grade was
+initialized as "C" instead of "A."
+CASE Expression Example
+DECLARE
+v_grade CHAR(1) := 'A';
+53
+v_appraisal VARCHAR2(20);
+BEGIN
+v_appraisal :=
+CASE v_grade
+WHEN 'A' THEN 'Excellent'
+WHEN 'B' THEN 'Very Good'
+WHEN 'C' THEN 'Good'
+ELSE 'No such grade'
+END;
+DBMS_OUTPUT.PUT_LINE('Grade: ' || v_grade ||
+' Appraisal: ' || v_appraisal);
+END;
+RESULT:
+Grade: A
+Appraisal: Excellent
+Statement processed.
+CASE Expression: A Second Example
+Determine what will be displayed when this block is
+executed:
+VARCHAR2(15);
+NUMBER := 20;
+54
+DECLARE
+v_out_var
+v_in_var
+BEGIN
+v_out_var :=
+CASE v_in_var
+WHEN 1 THEN 'Low value'
+WHEN v_in_var THEN 'Same value'
+WHEN 20 THEN 'Middle value'
+ELSE 'Other value'
+END;
+DBMS_OUTPUT.PUT_LINE(v_out_var);
+END;
+Searched CASE Expression Syntax
+• PL/SQL also provides a searched CASE expression, which
+has the following form:
+• A searched CASE expression has no selector.
+• Also, its WHEN clauses contain search conditions that yield
+a Boolean value, not expressions that can yield a value of
+any type.
+variable_name := CASE
+WHEN search_condition1 THEN result1
+WHEN search_condition2 THEN result2
+...
+WHEN search_conditionN THEN resultN
+[ELSE resultN+1]
+END;
+55
+Searched CASE Expressions: An Example
+Searched CASE expressions allow non-equality conditions,
+compound conditions, and different variables to be used in
+different WHEN clauses.
+DECLARE
+v_grade CHAR(1) := 'A';
+v_appraisal VARCHAR2(20);
+BEGIN
+v_appraisal :=
+CASE -- no selector here
+WHEN v_grade = 'A' THEN 'Excellent'
+WHEN v_grade IN ('B','C') THEN 'Good'
+ELSE 'No such grade'
+END;
+DBMS_OUTPUT.PUT_LINE ('Grade: '|| v_grade ||
+' Appraisal ' || v_appraisal);
+END;
+56
+How are CASE Expressions Different From
+CASE Statements?
+They are different because:
+• CASE expressions return a value into a variable.
+• CASE expressions end with END;
+• A CASE expression is a single PL/SQL statement.
+DECLARE
+v_grade CHAR(1) := 'A';
+v_appraisal VARCHAR2(20);
+BEGIN
+v_appraisal :=
+CASE
+WHEN v_grade = 'A' THEN 'Excellent'
+WHEN v_grade IN ('B','C') THEN 'Good'
+ELSE 'No such grade'
+END;
+DBMS_OUTPUT.PUT_LINE ('Grade: '|| v_grade || ' Appraisal ' || v_appraisal);
+END;
+57
+How are CASE Expressions Different From
+CASE Statements?
+• CASE statements evaluate conditions and perform
+actions.
+• A CASE statement can contain many PL/SQL statements.
+• CASE statements end with END CASE;.
+DECLARE
+v_grade CHAR(1) := 'A';
+BEGIN
+CASE
+WHEN v_grade = 'A' THEN
+DBMS_OUTPUT.PUT_LINE ('Excellent');
+WHEN v_grade IN ('B','C') THEN
+DBMS_OUTPUT.PUT_LINE ('Good');
+ELSE
+DBMS_OUTPUT.PUT_LINE('No such grade');
+END CASE;
+END;
+58
+Reference
+PL/SQL User's Guide and Reference, Release 9.0.1
+Part No. A89856-01
+Copyright © 1996, 2001, Oracle Corporation. All rights
+reserved.
+Primary Authors: Tom Portfolio, John Russell
+Oracle Academy
+PLSQL S4L1 Retrieving Data in PL/SQL
+PLSQL S4L2 Manipulating Data in PL/SQL
+Copyright © 2019, Oracle and/or its affiliates. All rights reserved.
+INTENDED LEARNING OUTCOME
+• Construct and identify loop statements.
+Iterative Control: LOOP Statements
+• Loops repeat a statement or a sequence of
+statements multiple times.
+• PL/SQL provides the following types of loops:
+– Basic loops that perform repetitive actions
+without overall conditions
+– FOR loops that perform iterative actions based
+on a counter
+– WHILE loops that perform repetitive actions
+based on a condition
+64
+Basic Loops
+• The simplest form of a LOOP statement is the basic loop,
+which encloses a sequence of statements between the
+keywords LOOP and END LOOP.
+• Use the basic loop when the statements inside the loop
+must execute at least once.
+66
+Basic Loops Exit
+• Each time the flow of execution reaches the END LOOP
+statement, control is passed to the corresponding LOOP
+statement that introduced it.
+• A basic loop allows the execution of its statements at least
+once, even if the EXIT condition is already met upon
+entering the loop.
+• Without the EXIT statement, the loop would never end
+(an infinite loop).
+BEGIN
+LOOP
+statements;
+EXIT [WHEN condition];
+END LOOP;
+END;
+67
+Basic Loops Simple Example
+• In this example, no data is processed.
+• We simply display the loop counter each time we repeat
+the loop.
+NUMBER(2) := 1;
+68
+DECLARE
+v_counter
+BEGIN
+LOOP
+DBMS_OUTPUT.PUT_LINE('Loop execution #' || v_counter);
+v_counter := v_counter + 1;
+EXIT WHEN v_counter > 5;
+END LOOP;
+END;
+Basic Loops More Complex Example
+In this example, three new location IDs for Montreal,
+Canada, are inserted in the LOCATIONS table.
+locations.location_id%TYPE;
+NUMBER(2) := 1;
+69
+DECLARE
+v_loc_id
+v_counter
+BEGIN
+SELECT MAX(location_id) INTO v_loc_id FROM locations
+WHERE country_id = 2;
+LOOP
+INSERT INTO locations(location_id, city, country_id)
+VALUES((v_loc_id + v_counter), 'Montreal', 2);
+v_counter := v_counter + 1;
+EXIT WHEN v_counter > 3;
+END LOOP;
+END;
+Basic Loops EXIT Statement
+• You can use the EXIT statement to terminate a loop and
+pass control to the next statement after the END LOOP
+statement.
+• You can issue EXIT as an action within an IF statement.
+DECLARE
+v_counter NUMBER := 1;
+BEGIN
+LOOP
+DBMS_OUTPUT.PUT_LINE('Counter is ' || v_counter);
+v_counter := v_counter + 1;
+IF v_counter > 10 THEN EXIT;
+END IF;
+END LOOP;
+END;
+70
+Basic Loop EXIT Statement Rules
+Rules:
+• The EXIT statement must be placed inside a loop.
+• If the EXIT condition is placed at the top of the loop
+(before any of the other executable statements) and that
+condition is initially true, then the loop exits and the other
+statements in the loop never execute.
+• A basic loop can contain multiple EXIT statements.
+71
+Basic Loop EXIT WHEN Statement
+• Although the IF...THEN EXIT works to end a loop, the
+correct way to end a basic loop is with the EXIT WHEN
+statement.
+• If the WHEN clause evaluates to TRUE, the loop ends and
+control passes to the next statement following END LOOP.
+DECLARE
+v_counter NUMBER := 1;
+BEGIN
+LOOP
+DBMS_OUTPUT.PUT_LINE('Counter is ' || v_counter);
+v_counter := v_counter + 1;
+EXIT WHEN v_counter > 10;
+END LOOP;
+END;
+72
+WHILE Loops
+• You can use the WHILE loop to repeat a sequence of
+statements until the controlling condition is no longer
+TRUE.
+• The condition is evaluated at the start of each iteration.
+• The loop terminates when the condition is FALSE or
+NULL.
+• If the condition is FALSE or NULL at the initial execution
+of the loop, then no iterations are performed.
+WHILE condition LOOP
+statement1;
+statement2;
+. . .
+END LOOP;
+74
+WHILE Loops
+• In the syntax:
+• Condition is a Boolean variable or expression (TRUE,
+FALSE, or NULL)
+• Statement can be one or more PL/SQL or SQL statements
+WHILE condition LOOP
+statement1;
+statement2;
+. . .
+END LOOP;
+PLSQL S4L4
+Iterative Control: WHILE and FOR Loops Copyright © 2016, Oracle and/or its affiliates. All rights reserved. 75
+WHILE
+• In the syntax:
+• If the variables involved in the conditions do not change
+during the body of the loop, then the condition remains
+TRUE and the loop does not terminate.
+• Note: If the condition yields NULL, then the loop is
+bypassed and control passes to the statement that follows
+the loop.
+WHILE condition LOOP
+statement1;
+statement2;
+. . .
+END LOOP;
+PLSQL S4L4
+Iterative Control: WHILE and FOR Loops Copyright © 2016, Oracle and/or its affiliates. All rights reserved. 76
+WHILE Loops
+• In this example, three new location IDs for Montreal,
+Canada, are inserted in the LOCATIONS table.
+• The counter is explicitly declared in this example.
+locations.location_id%TYPE;
+NUMBER := 1;
+PLSQL S4L4
+Iterative Control: WHILE and FOR Loops Copyright © 2016, Oracle and/or its affiliates. All rights reserved. 77
+DECLARE
+v_loc_id
+v_counter
+BEGIN
+SELECT MAX(location_id) INTO v_loc_id FROM locations
+WHERE country_id = 2;
+WHILE v_counter <= 3 LOOP
+INSERT INTO locations(location_id, city, country_id)
+VALUES((v_loc_id + v_counter), 'Montreal', 2);
+v_counter := v_counter + 1;
+END LOOP;
+END;
+WHILE Loops
+• With each iteration through the WHILE loop, a counter
+(v_counter) is incremented.
+• If the number of iterations is less than or equal to the
+number 3, then the code within the loop is executed and a
+row is inserted into the locations table.
+locations.location_id%TYPE;
+NUMBER := 1;
+PLSQL S4L4
+Iterative Control: WHILE and FOR Loops Copyright © 2016, Oracle and/or its affiliates. All rights reserved. 78
+DECLARE
+v_loc_id
+v_counter
+BEGIN
+SELECT MAX(location_id) INTO v_loc_id FROM locations
+WHERE country_id = 2;
+WHILE v_counter <= 3 LOOP
+INSERT INTO locations(location_id, city, country_id)
+VALUES((v_loc_id + v_counter), 'Montreal', 2);
+v_counter := v_counter + 1;
+END LOOP;
+END;
+WHILE Loops
+After the counter exceeds the number of new locations for
+this city and country, the condition that controls the loop
+evaluates to FALSE and the loop is terminated.
+locations.location_id%TYPE;
+NUMBER := 1;
+PLSQL S4L4
+Iterative Control: WHILE and FOR Loops Copyright © 2016, Oracle and/or its affiliates. All rights reserved. 79
+DECLARE
+v_loc_id
+v_counter
+BEGIN
+SELECT MAX(location_id) INTO v_loc_id FROM locations
+WHERE country_id = 2;
+WHILE v_counter <= 3 LOOP
+INSERT INTO locations(location_id, city, country_id)
+VALUES((v_loc_id + v_counter), 'Montreal', 2);
+v_counter := v_counter + 1;
+END LOOP;
+END;
+FOR Loops Described
+• FOR loops have the same general structure as the basic
+loop.
+• In addition, they have a control statement before the
+LOOP keyword to set the number of iterations that PL/SQL
+performs.
+FOR counter IN [REVERSE]
+lower_bound..upper_bound LOOP
+statement1;
+statement2;
+. . .
+END LOOP;
+PLSQL S4L4
+Iterative Control: WHILE and FOR Loops Copyright © 2016, Oracle and/or its affiliates. All rights reserved. 80
+FOR Loop Rules
+FOR loop rules:
+• Use a FOR loop to shortcut the test for the number of
+iterations.
+• Do not declare the counter; it is declared implicitly.
+• lower_bound .. upper_bound is the required
+syntax.
+FOR counter IN [REVERSE]
+lower_bound..upper_bound LOOP
+statement1;
+statement2;
+. . .
+END LOOP;
+PLSQL S4L4
+Iterative Control: WHILE and FOR Loops Copyright © 2016, Oracle and/or its affiliates. All rights reserved. 81
+FOR Loops Syntax
+• Counter is an implicitly declared integer whose value
+automatically increases or decreases (decreases if the
+REVERSE keyword is used) by 1 on each iteration of the
+loop until the upper or lower bound is reached.
+• REVERSE causes the counter to decrement with each
+iteration from the upper bound to the lower bound.
+• (Note that the lower bound is referenced first.)
+FOR counter IN [REVERSE]
+lower_bound..upper_bound LOOP
+statement1;
+statement2;
+. . .
+END LOOP;
+PLSQL S4L4
+Iterative Control: WHILE and FOR Loops Copyright © 2016, Oracle and/or its affiliates. All rights reserved. 82
+FOR Loops Syntax
+• lower_bound specifies the lower bound for the range of
+counter values.
+• upper_bound specifies the upper bound for the range
+of counter values.
+FOR counter IN [REVERSE]
+lower_bound..upper_bound LOOP
+statement1;
+statement2;
+. . .
+END LOOP;
+PLSQL S4L4
+Iterative Control: WHILE and FOR Loops Copyright © 2016, Oracle and/or its affiliates. All rights reserved. 83
+FOR Loop Example
+• You have already learned how to insert three new
+locations for the country code CA and the city Montreal by
+using the simple LOOP and the WHILE loop.
+• This slide shows you how to achieve the same by using the
+FOR loop.
+locations.location_id%TYPE;
+PLSQL S4L4
+Iterative Control: WHILE and FOR Loops Copyright © 2016, Oracle and/or its affiliates. All rights reserved. 84
+DECLARE
+v_loc_id
+BEGIN
+SELECT MAX(location_id) INTO v_loc_id FROM locations
+WHERE country_id = 2;
+FOR i IN 1..3 LOOP
+INSERT INTO locations(location_id, city, country_id)
+VALUES((v_loc_id + i), 'Montreal', 2);
+END LOOP;
+END;
+FOR Loop Guidelines
+PLSQL S4L4
+Iterative Control: WHILE and FOR Loops Copyright © 2016, Oracle and/or its affiliates. All rights reserved. 85
+FOR loops are a common structure of programming
+languages.
+• A FOR loop is used within the code when the beginning
+and ending value of the loop is known.
+• Reference the counter only within the loop; its scope does
+not extend outside the loop.
+• Do not reference the counter as the target of an
+assignment.
+• Neither loop bound (lower or upper) should be NULL.
+FOR Loop Expression Example
+• While writing a FOR loop, the lower and upper bounds of
+a LOOP statement do not need to be numeric literals.
+• They can be expressions that convert to numeric values.
+DECLARE
+v_lower NUMBER := 1;
+v_upper NUMBER := 100;
+BEGIN
+FOR i IN v_lower..v_upper LOOP
+...
+END LOOP;
+END;
+PLSQL S4L4
+Iterative Control: WHILE and FOR Loops Copyright © 2016, Oracle and/or its affiliates. All rights reserved. 86
+Nested Loop Example
+• In PL/SQL, you can nest loops to multiple levels.
+• You can nest FOR, WHILE, and basic loops within one
+another.
+BEGIN
+FOR v_outerloop IN 1..3 LOOP
+FOR v_innerloop IN REVERSE 1..5 LOOP
+DBMS_OUTPUT.PUT_LINE('Outer loop is: ' ||
+v_outerloop ||
+' and inner loop is: ' ||
+v_innerloop);
+END LOOP;
+END LOOP;
+END;
+PLSQL S4L5
+Iterative Control: Nested Loops Copyright © 2016, Oracle and/or its affiliates. All rights reserved. 88Nested Loop Example
+• In PL/SQL, you can nest loops to multiple levels.
+• You can nest FOR, WHILE, and basic loops within one
+another.
+BEGIN
+FOR v_outerloop IN 1..3 LOOP
+FOR v_innerloop IN REVERSE 1..5 LOOP
+DBMS_OUTPUT.PUT_LINE('Outer loop is: ' ||
+v_outerloop ||
+' and inner loop is: ' ||
+v_innerloop);
+END LOOP;
+END LOOP;
+END;
+PLSQL S4L5
+Iterative Control: Nested Loops Copyright © 2016, Oracle and/or its affiliates. All rights reserved. 88
+Nested Loops
+• This example contains EXIT conditions in nested basic
+loops.
+• What if you want to exit from the outer loop at step A?
+CHAR(3) := 'NO';
+CHAR(3) := 'NO';
+-- outer loop
+-- inner loop
+PLSQL S4L5
+Iterative Control: Nested Loops Copyright © 2016, Oracle and/or its affiliates. All rights reserved. 89
+DECLARE
+v_outer_done
+v_inner_done
+BEGIN
+LOOP
+...
+LOOP
+...
+... -- step A
+EXIT WHEN v_inner_done = 'YES';
+...
+END LOOP;
+...
+EXIT WHEN v_outer_done = 'YES';
+...
+END LOOP;
+END;
+Loop labels are required in this example in order to exit an
+outer loop from within an inner loop
+Loop Labels
+-- outer loop
+PLSQL S4L5
+Iterative Control: Nested Loops Copyright © 2016, Oracle and/or its affiliates. All rights reserved. 90
+DECLARE
+...
+BEGIN
+<<outer_loop>>
+LOOP
+...
+<<inner_loop>>
+LOOP -- inner loop
+EXIT outer_loop WHEN ... -- exits both loops
+EXIT WHEN v_inner_done = 'YES';
+...
+END LOOP;
+...
+EXIT WHEN v_outer_done = 'YES'; ...
+END LOOP;
+END;
+Loop Labels
+PLSQL S4L5
+Iterative Control: Nested Loops Copyright © 2016, Oracle and/or its affiliates. All rights reserved. 91
+• Loop label names follow the same rules as other
+identifiers.
+• A label is placed before a statement, either on the same
+line or on a separate line.
+• In FOR or WHILE loops, place the label before FOR or
+WHILE within label delimiters (<<label>>).
+• If the loop is labeled, the label name can optionally be
+included after the END LOOP statement for clarity.
+Loop Labels
+Label basic loops by placing the label before the word LOOP
+within label delimiters (<<label>>).
+PLS_INTEGER := 0;
+PLS_INTEGER := 5;
+PLSQL S4L5
+Iterative Control: Nested Loops Copyright © 2016, Oracle and/or its affiliates. All rights reserved. 92
+DECLARE
+v_outerloop
+v_innerloop
+BEGIN
+<<outer_loop>>
+LOOP
+v_outerloop := v_outerloop + 1;
+v_innerloop := 5;
+EXIT WHEN v_outerloop > 3;
+<<inner_loop>>
+LOOP
+DBMS_OUTPUT.PUT_LINE('Outer loop is: ' || v_outerloop ||
+' and inner loop is: ' || v_innerloop);
+v_innerloop := v_innerloop - 1;
+EXIT WHEN v_innerloop = 0;
+END LOOP inner_loop;
+END LOOP outer_loop;
+END;
+Nested Loops and Labels
+• In this example, there are two loops.
+• The outer loop is identified by the label
+<<outer_loop>>, and the inner loop is identified by
+the label <<inner_loop>>.
+...BEGIN
+<<outer_loop>>
+LOOP
+v_counter := v_counter + 1;
+EXIT WHEN v_counter > 10;
+<<inner_loop>>
+LOOP ...
+EXIT Outer_loop WHEN v_total_done = 'YES';
+-- Leave both loops
+EXIT WHEN v_inner_done = 'YES';
+PLSQL S4L5
+Iterative Control: Nested Loops Copyright © 2016, Oracle and/or its affiliates. All rights reserved. 93
+...
+...
+-- Leave inner loop only
+END LOOP inner_loop;
+END LOOP outer_loop;
+END;
+Reference
+PL/SQL User's Guide and Reference, Release 9.0.1
+Part No. A89856-01
+Copyright © 1996, 2001, Oracle Corporation. All rights
+reserved.
+Primary Authors: Tom Portfolio, John Russell
+Oracle Academy
+PLSQL S4L3 Iterative Control: Basic Loops
+PLSQL S4L4 Iterative Control: While and For Loops
+PLSQL S4L5 Iterative Control: Nested Loops
+Copyright © 2019, Oracle and/or its affiliates. All rights reserved.
+
+
+MOdule 2
+
+
+
+
+INTENDED LEARNING OUTCOME
+• Create a record with the %ROWTYPE attribute.
+• Create user-defined PL/SQL records.
+PL/SQL Records
+• A PL/SQL record is a composite data type consisting of a
+group of related data items stored as fields, each with its
+own name and data type.
+• You can refer to the whole record by its name and/or to
+individual fields by their names.
+• Typical syntax for defining a record, shown below, is similar
+to what we used for cursors, we just replace the cursor
+name with the table name.
+record_name table_name%ROWTYPE;
+5
+The Problem
+6
+• The EMPLOYEES table contains eleven columns:
+EMPLOYEE_ID, FIRST_NAME,....,
+MANAGER_ID, DEPARTMENT_ID.
+• You need to code a single-row SELECT * FROM
+EMPLOYEES in your PL/SQL subprogram.
+• Because you are selecting only a single row, you do not
+need to declare and use a cursor.
+• How many scalar variables must you DECLARE to hold the
+column values?
+The Problem
+• That is a lot of coding, and some tables will have even more
+columns.
+• Plus, what do you do if a new column is added to the table?
+• Or an existing column is dropped?
+DECLARE
+v_employee_id employees.employee_id%TYPE;
+v_first_name employees.first_name%TYPE;
+v_last_name employees.last_name%TYPE;
+v_email employees.email%TYPE;
+... FIVE MORE SCALAR VARIABLES REQUIRED TO MATCH THE TABLE
+v_manager_id employees.manager_id%TYPE;
+v_department_id employees.department_id%TYPE;
+BEGIN
+SELECT employee_id, first_name, ... EIGHT MORE HERE, department_id
+INTO v_employee_id, v_first_name, ... AND HERE, v_department_id
+FROM employees
+WHERE employee_id = 100;
+END;
+7
+The Problem
+8
+• Look at the code again. Wouldn’t it be easier to declare
+one variable instead of eleven?
+• As it did with cursors, %ROWTYPE allows us to declare a
+variable as a record based on a particular table's structure.
+• Each field or component within the record will have its
+own name and data type based on the table'sstructure.
+• You can refer to the whole record by its name and to
+individual fields by their names.
+The Solution - Use a PL/SQL Record
+• Use %ROWTYPE to declare a variable as a record based
+on the structure of the employeestable.
+• Less code to write and nothing to change if columns are
+added or dropped.
+DECLARE
+v_emp_record employees%ROWTYPE;
+BEGIN
+SELECT * INTO v_emp_record
+FROM employees
+WHERE employee_id = 100;
+DBMS_OUTPUT.PUT_LINE('Email for ' || v_emp_record.first_name ||
+' ' || v_emp_record.last_name || ' is ' || v_emp_record.email ||
+'@oracle.com.');
+END;
+9
+A Record Based on Another Record
+You can use %ROWTYPE to declare a record based on
+another record:
+DECLARE
+v_emp_record employees%ROWTYPE;
+v_emp_copy_record v_emp_record%ROWTYPE;
+BEGIN
+SELECT * INTO v_emp_record
+FROM employees
+WHERE employee_id = 100;
+v_emp_copy_record := v_emp_record;
+v_emp_copy_record.salary := v_emp_record.salary * 1.2;
+DBMS_OUTPUT.PUT_LINE(v_emp_record.first_name ||
+' ' || v_emp_record.last_name || ': Old Salary - ' ||
+v_emp_record.salary || ', Proposed New Salary - ' ||
+v_emp_copy_record.salary || '.');
+END;
+10
+Defining Your Own Records
+11
+• What if you need data from a join of multiple tables?
+• You can declare your own record structures containing any
+fields you like.
+• PL/SQL records:
+– Must contain one or more components/fields of any scalar or
+composite type
+– Are not the same as rows in a database table
+– Can be assigned initial values and can be defined as NOT NULL
+– Can be components of other records (nested records).
+Syntax for User-Defined Records
+• Start with the TYPE keyword to define your record
+structure.
+• It must include at least one field and the fields may be
+defined using scalar data types such as DATE,
+VARCHAR2, or NUMBER, or using attributes such as
+%TYPE and %ROWTYPE.
+• After declaring the type, use the type_name to declare a
+variable of that type.
+TYPE type_name IS RECORD
+(field_declaration[,field_declaration]...);
+identifier type_name;
+12
+User-Defined Records: Example 1
+• First, declare/define the type and a variable of that type.
+• Then use the variable and its components.
+DECLARE
+TYPE person_dept IS RECORD
+13
+(first_name
+last_name
+employees.first_name%TYPE,
+employees.last_name%TYPE,
+department_name departments.department_name%TYPE);
+v_person_dept_rec person_dept;
+BEGIN
+SELECT e.first_name, e.last_name, d.department_name
+INTO v_person_dept_rec
+FROM employees e JOIN departments d
+ON e.department_id = d.department_id
+WHERE employee_id = 200;
+DBMS_OUTPUT.PUT_LINE(v_person_dept_rec.first_name ||
+' ' || v_person_dept_rec.last_name || ' is in the ' ||
+v_person_dept_rec.department_name || ' department.');
+END;
+• Here we have two custom data types, one nested within
+the other.
+• How many fields can be addressed in v_emp_dept_rec?
+User-Defined Records: Example 2
+DECLARE
+TYPE dept_info_type IS RECORD
+(department_id departments.department_id%TYPE,
+department_name departments.department_name%TYPE)
+TYPE emp_dept_type IS RECORD
+14
+(first_name employees.first_name%TYPE,
+last_name
+dept_info
+employees.last_name%TYPE,
+dept_info_type);
+v_emp_dept_rec emp_dept_type;
+BEGIN
+...
+END;
+Declaring and Using Types and Records
+15
+• Types and records are composite structures that can be
+declared anywhere that scalar variables can be declared
+in anonymous blocks, procedures, functions, package
+specifications (global), package bodies (local), triggers,
+and so on.
+• Their scope and visibility follow the same rules as for
+scalar variables.
+• For example, you can declare a type (and a record based
+on the type) in an outer block and reference them within
+an inner block.
+The type and the record declared in the outer block are
+visible within the outer block and the inner block.
+Visibility and Scope of Types and Records
+DECLARE -- outer block
+TYPE employee_type IS RECORD
+16
+employees.first_name%TYPE := 'Amy');
+employee_type;
+(first_name
+v_emp_rec_outer
+BEGIN
+DBMS_OUTPUT.PUT_LINE(v_emp_rec_outer.first_name);
+DECLARE -- inner block
+v_emp_rec_inner employee_type;
+BEGIN
+v_emp_rec_outer.first_name := 'Clara';
+DBMS_OUTPUT.PUT_LINE(v_emp_rec_outer.first_name ||
+' and ' || v_emp_rec_inner.first_name);
+END;
+DBMS_OUTPUT.PUT_LINE(v_emp_rec_outer.first_name);
+END;
+Reference
+PL/SQL User's Guide and Reference, Release 9.0.1
+Part No. A89856-01
+Copyright © 1996, 2001, Oracle Corporation. All rights
+reserved.
+Primary Authors: Tom Portfolio, John Russell
+Oracle Academy
+PLSQL S6L1 User-Defined Records
+Copyright © 2019, Oracle and/or its affiliates. All rights reserved.
+
+
+
+INTENDED LEARNING OUTCOME
+• Distinguish between implicit and explicit cursors.
+• Discuss the reasons for using explicit cursors.
+• Declare and control explicit cursors.
+• Use simple loops and cursor FOR loops to fetch data.
+Context Areas and Cursors
+• The Oracle server allocates a private memory area called a
+context area to store the data processed by a SQL statement.
+• Every context area (and therefore every SQL statement) has
+a cursor associated with it.
+Cursor
+Context Area
+22
+Context Areas and Cursors
+• You can think of a cursor either as a label for the context
+area, or as a pointer to the context area.
+• In fact, a cursor is both of these items.
+ContextArea
+23
+Cursor
+Implicit and Explicit Cursors
+24
+There are two types of cursors:
+• Implicit cursors: Defined automatically by Oracle for all SQL
+DML statements (INSERT, UPDATE, DELETE, and
+MERGE), and for SELECT statements that return only one
+row.
+• Explicit cursors: Declared by the programmer for queries
+that return more than one row.
+– You can use explicit cursors to name a context area and
+access its stored data.
+Limitations of Implicit Cursors
+• Programmers must think about the data that is possible as
+well as the data that actually exists now.
+• If there ever is more than one row in the EMPLOYEES
+table, the SELECT statement below (without a WHERE
+clause) will cause an error.
+DECLARE
+v_salary employees.salary%TYPE;
+BEGIN
+SELECT salary INTO v_salary
+FROM employees;
+DBMS_OUTPUT.PUT_LINE(' Salary is : '||v_salary);
+END;
+25
+ORA-01422: exact fetch returns more than requested number of rows
+Explicit Cursors
+26
+• With an explicit cursor, you can retrieve multiple rows
+from a database table, have a pointer to each row that is
+retrieved, and work on the rows one at a time.
+• Reasons to use an explicit cursor:
+– It is the only way in PL/SQL to retrieve more than one row
+from a table.
+– Each row is fetched by a separate program statement, giving
+the programmer more control over the processing of the
+rows.
+Example of an Explicit Cursor
+The following example uses an explicit cursor to display each
+row from the departments table.
+DECLARE
+CURSOR cur_depts IS
+SELECT department_id, department_name FROM departments;
+27
+departments.department_id%TYPE;
+departments.department_name%TYPE;
+v_department_id
+v_department_name
+BEGIN
+OPEN cur_depts;
+LOOP
+FETCH cur_depts INTO v_department_id, v_department_name;
+EXIT WHEN cur_depts%NOTFOUND;
+DBMS_OUTPUT.PUT_LINE(v_department_id||' '||v_department_name);
+END LOOP;
+CLOSE cur_depts;
+END;
+Explicit Cursor Operations
+• The set of rows returned by a multiple-row query is called
+the active set, and is stored in the context area.
+• Its size is the number of rows that meet your query
+criteria.
+Active set
+Table
+100 King AD_PRES
+101 Kochhar AD_VP
+102 De Haan AD_VP
+139 Seo ST_CLERK
+Explicit Cursor
+28
+Explicit Cursor Operations
+• Think of the context area (named by the cursor) as a box,
+and the active set as the contents of the box.
+• To get at the data, you must OPEN the box and FETCH
+each row from the box one at a time.
+• When finished, you must CLOSE the box.
+Active set
+Table
+100 King AD_PRES
+101 Kochhar AD_VP
+102 De Haan AD_VP
+139 Seo ST_CLERK
+Explicit Cursor
+29
+Controlling Explicit Cursors
+Fetch each row,
+one at a time.
+Close the cursor.
+Cursor
+pointer
+1 Open the cursor.
+2
+3
+Cursor
+pointer
+Cursor
+pointer
+30
+Steps for Using Explicit Cursors
+You first DECLARE a cursor, and then you use the OPEN,
+FETCH, and CLOSE statements to control a cursor.
+Retrieve the
+current row
+into
+variables.
+FETCH
+Test for
+remaining
+rows.
+Return to
+FETCHif
+additional
+row found.
+Release the
+active set.
+CLOSE
+Define the
+cursor.
+DECLARE
+Fill the
+cursor
+active set
+with data.
+OPEN EXIT
+31
+Steps for Using Explicit Cursors
+32
+Now that you have a conceptual understanding of cursors,
+review the steps to use them:
+• DECLARE the cursor in the declarative section by naming it
+and defining the SQL SELECT statement to be associated
+with it.
+• OPEN the cursor.
+– This will populate the cursor's active set with the results of
+the SELECT statement in the cursor's definition.
+– The OPEN statement also positions the cursor pointer at the
+first row.
+Steps for Using Explicit Cursors
+33
+Now that you have a conceptual understanding of cursors,
+review the steps to use them:
+• FETCH each row from the active set and load the data into
+variables.
+– After each FETCH, the EXIT WHEN checks to see if the FETCH
+reached the end of the active set resulting in a data NOTFOUND
+condition.
+– If the end of the active set was reached, the LOOP is exited.
+• CLOSE the cursor.
+– The CLOSE statement releases the active set of rows.
+– It is now possible to reopen the cursor to establish a fresh
+active set using a new OPEN statement.
+Declaring the Cursor
+34
+When declaring the cursor:
+• Do not include the INTO clause in the cursor declaration
+because it appears later in the FETCH statement.
+• If processing rows in a specific sequence is required, then
+use the ORDER BY clause in the query.
+• The cursor can be any valid SELECT statement, including
+joins, subqueries, and so on.
+• If a cursor declaration references any PL/SQL variables,
+these variables must be declared before declaring the
+cursor.
+Syntax for Declaring the Cursor
+• The active set of a cursor is determined by the SELECT
+statement in the cursor declaration.
+• Syntax:
+• In the syntax:
+– cursor_name
+– select_statement
+Is a PL/SQL identifier
+Is a SELECT statement without
+an INTO clause
+CURSOR cursor_name IS
+select_statement;
+35
+Declaring the Cursor Example 1
+The cur_emps cursor is declared to retrieve the
+employee_id and last_name columns of the employees
+working in the department with a department_id of 30.
+DECLARE
+CURSOR cur_emps IS
+SELECT employee_id, last_name FROM employees
+WHERE department_id = 30;
+...
+36
+Declaring the Cursor Example 2
+• The cur_depts cursor is declared to retrieve all the
+details for the departments with the location_id
+1700.
+• You want to fetch and process these rows in ascending
+sequence by department_name.
+DECLARE
+CURSOR cur_depts IS
+SELECT * FROM departments
+WHERE location_id = 1700
+ORDER BY department_name;
+...
+37
+Declaring the Cursor Example 3
+• A SELECT statement in a cursor declaration can include
+joins, group functions, and subqueries.
+• This example retrieves each department that has at least
+two employees, giving the department name and number
+of employees.
+DECLARE
+CURSOR cur_depts_emps IS
+SELECT department_name, COUNT(*) AS how_many
+FROM departments d, employees e
+WHERE d.department_id = e.department_id
+GROUP BY d.department_name
+HAVING COUNT(*) > 1;
+...
+38
+Opening the Cursor
+• The OPEN statement executes the query associated with
+the cursor, identifies the active set, and positions the
+cursor pointer to the first row.
+• The OPEN statement is included in the executable section
+of the PL/SQL block.
+DECLARE
+CURSOR cur_emps IS
+SELECT employee_id, last_name FROM employees
+WHERE department_id = 30;
+...
+BEGIN
+OPEN cur_emps;
+...
+39
+Opening the Cursor
+The OPEN statement performs the following operations:
+• Allocates memory for a context area (creates the box to
+hold the data)
+• Executes the SELECT statement in the cursor declaration,
+returning the results into the active set (fills the box with
+the data)
+• Positions the pointer to the first row
+in the active set
+40
+Fetching Data from the Cursor
+• The FETCH statement retrieves the rows from the cursor
+one at a time.
+• After each successful fetch, the cursor advances to the
+next row in the active set.
+DECLARE
+CURSOR emp_cursor IS
+SELECT employee_id, last_name FROM employees
+WHERE department_id =10;
+v_empno employees.employee_id%TYPE;
+v_lname employees.last_name%TYPE;
+BEGIN
+OPEN emp_cursor;
+FETCH emp_cursor INTO v_empno, v_lname;
+DBMS_OUTPUT.PUT_LINE( v_empno ||' '||v_lname);
+...
+END;
+41
+Fetching Data from the Cursor
+• Two variables, v_empno and v_lname, were declared to
+hold the values fetched from the cursor.
+DECLARE
+CURSOR emp_cursor IS
+SELECT employee_id, last_name FROM employees
+WHERE department_id =10;
+v_empno employees.employee_id%TYPE;
+v_lname employees.last_name%TYPE;
+BEGIN
+OPEN emp_cursor;
+FETCH emp_cursor INTO v_empno, v_lname;
+DBMS_OUTPUT.PUT_LINE( v_empno ||' '||v_lname);
+...
+END;
+42
+Fetching Data from the Cursor
+• The previous code successfully fetched the values from the
+first row in the cursor into the variables.
+• If there are other employees in department 50, you have
+to use a loop as shown below to access and process each
+row.
+DECLARE
+CURSOR cur_emps IS
+SELECT employee_id, last_name FROM employees
+WHERE department_id =50;
+v_empno employees.employee_id%TYPE;
+v_lname employees.last_name%TYPE;
+BEGIN
+OPEN cur_emps;
+LOOP
+FETCH cur_emps INTO v_empno, v_lname;
+EXIT WHEN cur_emps%NOTFOUND;
+DBMS_OUTPUT.PUT_LINE( v_empno ||' '||v_lname);
+END LOOP; …
+END;
+43
+Guidelines for Fetching Data From the
+Cursor
+Follow these guidelines when fetching data from the cursor:
+• Include the same number of variables in the INTO clause
+of the FETCH statement as columns in the SELECT
+statement, and be sure that the data types are compatible.
+• Match each variable to correspond to the columns position
+in the cursor definition.
+• Use %TYPE to ensure data types are compatible between
+variable and table.
+44
+Guidelines for Fetching Data From the
+Cursor
+Follow these guidelines when fetching data from the cursor:
+• Test to see whether the cursor contains rows.
+• If a fetch acquires no values, then there are no rows to
+process (or left to process) in the active set and no error is
+recorded.
+• You can use the %NOTFOUND cursor attribute to test for
+the exit condition.
+45
+Fetching Data From the Cursor Example 1
+What is wrong with this example?
+DECLARE
+CURSOR cur_emps IS
+SELECT employee_id, last_name, salary FROM employees
+WHERE department_id =30;
+v_empno employees.employee_id%TYPE;
+v_lname employees.last_name%TYPE;
+v_sal employees.salary%TYPE;
+BEGIN
+OPEN cur_emps;
+LOOP
+FETCH cur_emps INTO v_empno, v_lname;
+EXIT WHEN cur_emps%NOTFOUND;
+DBMS_OUTPUT.PUT_LINE( v_empno ||' '||v_lname);
+END LOOP;
+…
+END;
+46
+Fetching Data From the Cursor Example 2
+• There is only one employee in department 10.
+• What happens when this example is executed?
+DECLARE
+CURSOR cur_emps IS
+SELECT employee_id, last_name FROM employees
+WHERE department_id =10;
+v_empno employees.employee_id%TYPE;
+v_lname employees.last_name%TYPE;
+BEGIN
+OPEN cur_emps;
+LOOP
+FETCH cur_emps INTO v_empno, v_lname;
+DBMS_OUTPUT.PUT_LINE(v_empno || ' ' || v_lname);
+END LOOP;
+…
+END;
+47
+Closing the Cursor
+• The CLOSE statement disables the cursor, releases the
+context area, and undefines the active set.
+• You should close the cursor after completing the
+processing of the FETCH statement.
+...
+LOOP
+FETCH cur_emps INTO v_empno, v_lname;
+EXIT WHEN cur_emps%NOTFOUND;
+DBMS_OUTPUT.PUT_LINE(v_empno || ' ' ||
+v_lname);
+END LOOP;
+CLOSE cur_emps;
+END;
+48
+Closing the Cursor
+• You can reopen the cursor later if required.
+• Think of CLOSE as closing and emptying the box, so you
+can no longer FETCH its contents.
+...
+LOOP
+FETCH cur_emps INTO v_empno, v_lname;
+EXIT WHEN cur_emps%NOTFOUND;
+DBMS_OUTPUT.PUT_LINE(v_empno || ' ' ||
+v_lname);
+END LOOP;
+CLOSE cur_emps;
+END;
+49
+Guidelines for Closing the Cursor
+Follow these guidelines when closing the cursor:
+• A cursor can be reopened only if it is closed.
+• If you attempt to fetch data from a cursor after it has been
+closed, then an INVALID_CURSOR exception is raised.
+• If you later reopen the cursor, the associated SELECT
+statement is re-executed to re-populate the context area
+with the most recent data from the database.
+50
+Now, when looking at an explicit cursor, you should be able
+to identify the cursor-related keywords and explain what
+each statement is doing.
+Putting It All Together
+51
+DECLARE
+CURSOR cur_depts IS
+SELECT department_id, department_name FROM departments
+departments.department_id%TYPE;
+departments.department_name%TYPE;
+v_department_id
+v_department_name
+BEGIN
+OPEN cur_depts;
+LOOP
+FETCH cur_depts INTO v_department_id, v_department_name;
+EXIT WHEN cur_depts%NOTFOUND;
+DBMS_OUTPUT.PUT_LINE(v_department_id||' '||v_department_name);
+END LOOP;
+CLOSE cur_depts;
+END;
+
+Explicit Cursor Attributes
+53
+• As with implicit cursors, there are several attributes for
+obtaining status information about an explicit cursor.
+• When appended to the cursor variable name, these
+attributes return useful information about the execution of
+a cursor manipulation statement.
+Attribute Type Description
+%ISOPEN Boolean Evaluates to TRUE if the cursor is open.
+%NOTFOUND Boolean
+Evaluates to TRUE if the most recent fetch did not return
+a row.
+%FOUND Boolean
+Evaluates to TRUE if the most recent fetch returned a
+row; opposite of %NOTFOUND.
+%ROWCOUNT Number Evaluates to the total number of rows FETCHed so far.
+%ISOPEN Attribute
+• You can fetch rows only when the cursor is open.
+• Use the %ISOPEN cursor attribute before performing a
+fetch to test whether the cursor is open.
+• %ISOPEN returns the status of the cursor: TRUE if open
+and FALSE if not.
+• Example:
+IF NOT cur_emps%ISOPEN THEN
+OPEN cur_emps;
+END IF;
+LOOP
+FETCH cur_emps...
+54
+and %NOTFOUND
+55
+%ROWCOUNT
+Attributes
+• Usually the %ROWCOUNT and %NOTFOUND attributes
+are used in a loop to determine when to exit the loop.
+• Use the %ROWCOUNT cursor attribute for the following:
+– To process an exact number of rows
+– To count the number of rows fetched so far in a loop and/or
+determine when to exit the loop
+%ROWCOUNT and %NOTFOUND
+Attributes
+Use the %NOTFOUND cursor attribute for the following:
+• To determine whether the query found any rows matching
+your criteria
+• To determine when to exit the loop
+56
+Example of %ROWCOUNT and
+%NOTFOUND
+This example shows how you can use %ROWCOUNT and
+%NOTFOUND attributes for exit conditions in a loop.
+DECLARE
+CURSOR cur_emps IS
+SELECT employee_id, last_name FROM employees;
+v_emp_record cur_emps%ROWTYPE;
+BEGIN
+OPEN cur_emps;
+LOOP
+FETCH cur_emps INTO v_emp_record;
+EXIT WHEN cur_emps%ROWCOUNT > 10 OR cur_emps%NOTFOUND;
+DBMS_OUTPUT.PUT_LINE(v_emp_record.employee_id || ' '
+|| v_emp_record.last_name);
+END LOOP;
+CLOSE cur_emps;
+END;
+57
+Explicit Cursor Attributes in SQL Statements
+• You cannot use an explicit cursor attribute directly in an
+SQL statement.
+• The following code returns an error:
+DECLARE
+CURSOR cur_emps IS
+SELECT employee_id, salary
+FROM employees
+ORDER BY SALARY DESC;
+v_emp_record cur_emps%ROWTYPE;
+v_count NUMBER;
+BEGIN
+OPEN cur_emps;
+LOOP
+FETCH cur_emps INTO v_emp_record;
+EXIT WHEN cur_emps%NOTFOUND;
+INSERT INTO top_paid_emps (employee_id, rank, salary)
+VALUES
+(v_emp_record.employee_id, cur_emps%ROWCOUNT, v_emp_record.salary);
+...
+58
+Explicit Cursor Attributes in SQL Statements
+• To avoid the error on the previous slide,we would copy the
+cursor attribute value to a variable, then use the variable in the
+SQL statement:
+
+Cursor FOR Loops
+• A cursor FOR loop processes rows in an explicit cursor.
+• It is a shortcut because the cursor is opened, a row is
+fetched once for each iteration in the loop, the loop exits
+when the last row is processed, and the cursor is closed
+automatically.
+• The loop itself is terminated automatically at the end of
+the iteration when the last row has been fetched.
+• Syntax:
+FOR record_name IN cursor_name LOOP
+statement1;
+statement2;
+. . .
+END LOOP;
+61
+Cursor FOR Loops
+In the syntax:
+• record_name
+• cursor_name
+Is the name of the implicitly declared
+record (as cursor_name%ROWTYPE)
+Is a PL/SQL identifier for a previously
+declared cursor
+FOR record_name IN cursor_name LOOP
+statement1;
+statement2;
+. . .
+END LOOP;
+62
+Cursor FOR Loops
+• You can simplify your coding by using a cursor FOR loop
+instead of the OPEN, FETCH, and CLOSE statements.
+• A cursor FOR loop implicitly declares its loop counter as a
+record that represents a row FETCHed from the database.
+• A cursor FOR loop:
+–OPENs a cursor.
+– Repeatedly FETCHes rows of values from the active set
+into fields in the record.
+– CLOSEs the cursor when all rows have been processed.
+Cursor FOR Loops
+• Note: v_emp_record is the record that is implicitly
+declared.
+• You can access the fetched data with this implicit record as
+shown below.
+64
+Cursor FOR Loops
+• No variables are declared to hold the fetched data and no
+INTO clause is required.
+• OPEN and CLOSE statements are not required, they happen
+automatically in this syntax.
+Cursor FOR Loops
+• There is no need to declare the variable v_emp_rec in the
+declarative section. The syntax "FOR v_emp_rec IN …"
+implicitly defines v_emp_rec.
+• The scope of the implicit record is restricted to the loop, so
+you cannot reference the fetched data outside the loop.
+Cursor FOR Loops
+• Compare the cursor FOR loop (on the left) with the cursor
+code you learned in the previous lesson.
+• The two forms of the code are logically identical to each
+other and produce exactly the same results.
+DECLARE
+CURSOR cur_emps IS
+SELECT employee_id, last_name
+FROM employees
+WHERE department_id = 50;
+BEGIN
+FOR v_emp_rec IN cur_emps LOOP
+DBMS_OUTPUT.PUT_LINE(…);
+END LOOP;
+END;
+DECLARE
+CURSOR cur_emps IS
+SELECT employee_id, last_name
+FROM employees
+WHERE department_id = 50;
+v_emp_rec cur_emps%ROWTYPE;
+BEGIN
+OPEN cur_emps;
+LOOP
+FETCH cur_emps INTO v_emp_rec;
+EXIT WHEN cur_emps%NOTFOUND;
+DBMS_OUTPUT.PUT_LINE(…);
+END LOOP;
+CLOSE cur_emps;
+END;
+67
+Guidelines for Cursor FOR Loops
+Guidelines:
+• Do not declare the record that controls the loop because it
+is declared implicitly.
+• The scope of the implicit record is restricted to the loop, so
+you cannot reference the record outside the loop.
+• You can access fetched data using
+record_name.column_name.
+68
+Testing Cursor Attributes
+• You can still test cursor attributes, such as %ROWCOUNT.
+• This example exits from the loop after five rows have been
+fetched and processed.
+• The cursor is still closed automatically.
+DECLARE
+CURSOR cur_emps IS
+SELECT employee_id, last_name
+FROM employees;
+BEGIN
+FOR v_emp_record IN cur_emps LOOP
+EXIT WHEN cur_emps%ROWCOUNT > 5;
+DBMS_OUTPUT.PUT_LINE(v_emp_record.employee_id || ' ' ||
+v_emp_record.last_name);
+END LOOP;
+END;
+69
+Cursor FOR Loops Using Subqueries
+70
+• You can go one step further. You don’t have to declare the
+cursor at all!
+• Instead, you can specify the SELECT on which the cursor
+is based directly in the FOR loop.
+• The advantage of this is the cursor definition is contained
+in a single FOR … statement.
+• In complex code with lots of cursors, this simplification
+makes code maintenance easier and quicker.
+• The downside is you can't reference cursor attributes.
+Cursor FOR Loops Using Subqueries:
+Example
+The SELECT clause in the FOR statement is technically a
+subquery, so you must enclose it in parentheses.
+BEGIN
+FOR v_emp_record IN (SELECT employee_id, last_name
+FROM employees WHERE department_id = 50)
+LOOP
+DBMS_OUTPUT.PUT_LINE(v_emp_record.employee_id || ' '
+|| v_emp_record.last_name);
+END LOOP;
+END;
+71
+Cursor FOR Loops Using Subqueries
+• Again, compare these two forms of code.
+• They are logically identical, but which one would you
+rather write – especially if you hate typing!
+BEGIN
+FOR v_dept_rec IN (SELECT *
+FROM departments) LOOP
+DBMS_OUTPUT.PUT_LINE(…);
+END LOOP;
+END;
+DECLARE
+CURSOR cur_depts IS
+SELECT * FROM departments;
+v_dept_rec
+cur_depts%ROWTYPE;
+BEGIN
+OPEN cur_depts;
+LOOP
+FETCH cur_depts INTO
+v_dept_rec;
+EXIT WHEN
+cur_depts%NOTFOUND;
+DBMS_OUTPUT.PUT_LINE(…);
+END LOOP;
+CLOSE cur_depts;
+END;
+72
+Reference
+PL/SQL User's Guide and Reference, Release 9.0.1
+Part No. A89856-01
+Copyright © 1996, 2001, Oracle Corporation. All rights
+reserved.
+Primary Authors: Tom Portfolio, John Russell
+Oracle Academy
+PLSQL S5L1 Introduction to Explicit Cursors
+PLSQL S5L2 Using Explicit Cursor Attributes
+PLSQL S5L3 Cursor FOR Loops
+Copyright © 2019, Oracle and/or its affiliates. All rights reserved.
+
+
+
+INTENDED LEARNING OUTCOME
+• Declare and use cursors with parameters.
+• Lock rows with the FOR UPDATE clause.
+Cursors with Parameters
+• A parameter is a variable whose name is used in a cursor
+declaration.
+• When the cursor is opened, the parameter value is passed
+to the Oracle server, which uses it to decide which rows to
+retrieve into the active set of the cursor.
+78
+Cursors with Parameters
+79
+• This means that you can open and close an explicit cursor
+several times in a block, or in different executions of the
+same block, returning a different active set on each
+occasion.
+• Consider an example where you pass a location_id to a
+cursor and it returns the names of the departments at that
+location.
+Cursors with Parameters: Example
+DECLARE
+CURSOR cur_country (p_region_id NUMBER) IS
+SELECT country_id, country_name
+FROM countries
+WHERE region_id = p_region_id;
+v_country_record cur_country%ROWTYPE;
+BEGIN
+OPEN cur_country (5);
+LOOP
+FETCH cur_country INTO v_country_record;
+EXIT WHEN cur_country%NOTFOUND;
+DBMS_OUTPUT.PUT_LINE(v_country_record.country_id || ' '
+|| v_country_record.country_name);
+END LOOP;
+CLOSE cur_country;
+END;
+Change to whichever
+80
+region is required.
+.
+Defining Cursors with Parameters Syntax
+• Each parameter named in the cursor declaration must
+have a corresponding value in the OPEN statement.
+• Parameter data types are the same as those for scalar
+variables, but you do not give them sizes.
+• The parameter names are used in the WHERE clause of the
+cursor SELECT statement.
+CURSOR cursor_name
+[(parameter_name datatype, ...)]
+IS
+select_statement;
+81
+Defining Cursors with Parameters Syntax
+Is a PL/SQL identifier for the declared
+In the syntax:
+• cursor_name
+cursor
+• parameter_name Is the name of a parameter
+• datatype Is the scalar data type of the parameter
+• select_statement Is a SELECT statement without
+the INTO clause
+CURSOR cursor_name
+[(parameter_name datatype, ...)]
+IS
+select_statement;
+82
+Opening Cursors with Parameters
+The following is the syntax for opening a cursor with
+parameters:
+OPEN cursor_name(parameter_value1, parameter_value2, ...);
+83
+Cursors with Parameters
+• You pass parameter values to a cursor when the cursor is
+opened.
+• Therefore you can open a single explicit cursor several
+times and fetch a different active set each time.
+• In the following example, a cursor is opened several times.
+DECLARE
+CURSOR cur_countries (p_region_id NUMBER) IS
+SELECT country_id, country_name FROM countries
+WHERE region_id = p_region_id;
+v_country_record c_countries%ROWTYPE;
+BEGIN
+OPEN cur_countries (5);
+...
+CLOSE cur_countries;
+OPEN cur_countries (145);
+...
+Open the cursor again and
+return a different active set.
+84
+Another Example of a Cursor with a Parameter
+DECLARE
+v_deptid employees.department_id%TYPE;
+CURSOR cur_emps (p_deptid NUMBER) IS
+SELECT employee_id, salary
+FROM employees
+WHERE department_id = p_deptid;
+v_emp_rec cur_emps%ROWTYPE;
+BEGIN
+SELECT MAX(department_id) INTO v_deptid
+FROM employees;
+OPEN cur_emps(v_deptid);
+LOOP
+FETCH cur_emps INTO v_emp_rec;
+EXIT WHEN cur_emps%NOTFOUND;
+DBMS_OUTPUT.PUT_LINE(v_emp_rec.employee_id || ' '
+|| v_emp_rec.salary);
+END LOOP;
+CLOSE cur_emps;
+END;
+85
+Cursor FOR Loops wıth a Parameter
+We can use a cursor FOR loop if needed:
+DECLARE
+CURSOR cur_emps (p_deptno NUMBER) IS
+SELECT employee_id, last_name
+FROM employees
+WHERE department_id = p_deptno;
+BEGIN
+FOR v_emp_record IN cur_emps(10) LOOP
+...
+END LOOP;
+END;
+86
+Cursors with Multiple Parameters: Example 1
+In the following example, a cursor is declared and is called
+with two parameters:
+DECLARE
+CURSOR cur_countries (p_region_id NUMBER, p_population NUMBER) IS
+SELECT country_id, country_name, population
+FROM countries
+WHERE region_id = p_region_id
+OR population > p_population;
+BEGIN
+FOR v_country_record IN cur_countries(145,10000000) LOOP
+DBMS_OUTPUT.PUT_LINE(v_country_record.country_id ||' '
+|| v_country_record. country_name||' '
+|| v_country_record.population);
+END LOOP;
+END;
+87
+Cursors with Multiple Parameters: Example 2
+This cursor fetches all IT Programmers who earn more than
+$10,000.00
+DECLARE
+CURSOR cur_emps (p_job VARCHAR2, p_salary NUMBER) IS
+SELECT employee_id, last_name
+FROM employees
+WHERE job_id = p_job
+AND salary > p_salary;
+BEGIN
+FOR v_emp_record IN cur_emps('IT_PROG', 10000) LOOP
+DBMS_OUTPUT.PUT_LINE(v_emp_record.employee_id ||' '
+|| v_emp_record.last_name);
+END LOOP;
+END;
+88
+89
+Declaring a Cursor with the FOR UPDATE
+Syntax
+• When we declare a cursor FOR UPDATE, each row is
+locked as we open the cursor.
+• This prevents other users from modifying the rows while
+our cursor is open.
+• It also allows us to modify the rows ourselves using a …
+WHERE CURRENT OF … clause.
+• This does not prevent other users from reading the rows.
+CURSOR cursor_name IS
+SELECT ... FROM ...
+FOR UPDATE [OF column_reference][NOWAIT | WAIT n];
+90
+Declaring a Cursor with the FOR UPDATE
+Clause
+• column_reference is a column in the table whose
+rows we need to lock.
+• If the rows have already been locked by another session:
+– NOWAIT returns an Oracle server error immediately
+– WAIT n waits for n seconds, and returns an Oracle server
+error if the other session is still locking the rows at the end of
+that time.
+CURSOR cursor_name IS
+SELECT ... FROM ...
+FOR UPDATE [OF column_reference][NOWAIT | WAIT n];
+91
+NOWAIT Keyword in the FOR UPDATE
+Clause Example
+• The optional NOWAIT keyword tells the Oracle server not
+to wait if any of the requested rows have already been
+locked by another user.
+• Control is immediately returned to your program so that it
+can do other work before trying again to acquire the lock.
+• If you omit the NOWAIT keyword, then the Oracle server
+waits indefinitely until the rows are available.
+DECLARE
+CURSOR cur_emps IS
+SELECT employee_id, last_name FROM employees
+WHERE department_id = 80 FOR UPDATE NOWAIT;
+...
+92
+NOWAIT Keyword in the FOR UPDATE
+Clause
+93
+• If the rows are already locked by another session and you
+have specified NOWAIT, then opening the cursor will
+result in an error.
+• You can try to open the cursor later.
+• You can use WAIT n instead of NOWAIT and specify the
+number of seconds to wait and check whether the rows
+are unlocked.
+• If the rows are still locked after n seconds, then an error is
+returned.
+FOR UPDATE OF column-name Example
+• If the cursor is based on a join of two tables, we may want
+to lock the rows of one table but not the other.
+• To do this, we specify any column of the table we want to
+lock.
+DECLARE
+CURSOR emp_cursor IS
+SELECT e.employee_id, d.department_name
+FROM employees e, departments d
+WHERE e.department_id = d.department_id
+AND department_id = 80 FOR UPDATE OF salary;
+...
+94
+WHERE CURRENT OF Clause Syntax
+• The WHERE CURRENT OF clause is used in conjunction
+with the FOR UPDATE clause to refer to the current row
+(the most recently FETCHed row) in an explicit cursor.
+• The WHERE CURRENT OF clause is used in the UPDATE or
+DELETE statement, whereas the FOR UPDATE clause is
+specified in the cursor declaration.
+• cursor_name Is the name of a declared cursor (The
+cursor must have been declared with the FOR UPDATE
+clause.)
+WHERE CURRENT OF cursor-name;
+95
+WHERE CURRENT OF Clause
+• You can use WHERE CURRENT OF for updating or
+deleting the current row from the corresponding database
+table.
+• This enables you to apply updates and deletes to the row
+currently being addressed, without the need to use a
+WHERE clause.
+• You must include the FOR UPDATE clause in the cursor
+query so that the rows are locked on OPEN.
+WHERE CURRENT OF cursor-name;
+96
+WHERE CURRENT OF Clause Example
+Use cursors to update or delete the current row.
+• Include the FOR UPDATE clause in the cursor query to
+lock the rows first.
+• Use the WHERE CURRENT OF clause to reference the
+current row from an explicit cursor.
+UPDATE employees
+SET salary = ...
+WHERE CURRENT OF cur_emps;
+97
+NOWAIT, FOR UPDATE, and WHERE
+CURRENT OF Clause
+In this example,
+we don’t need a
+column-reference
+in the FOR
+UPDATE clause
+because the
+cursor is not
+based on a join.
+DECLARE
+CURSOR cur_emps IS
+SELECT employee_id, salary FROM my_employees
+WHERE salary <= 20000 FOR UPDATE NOWAIT;
+v_emp_rec cur_emps%ROWTYPE;
+BEGIN
+OPEN cur_emps;
+LOOP
+FETCH cur_emps INTO v_emp_rec;
+EXIT WHEN cur_emps%NOTFOUND;
+UPDATE my_employees
+SET salary = v_emp_rec.salary*1.1
+WHERE CURRENT OF cur_emps;
+END LOOP;
+CLOSE cur_emps;
+END;
+98
+FOR UPDATE Second Example
+• FOR UPDATE OF salary locks only the
+MY_EMPLOYEES rows, not the MY_DEPARTMENTS
+rows.
+• Note that we update the table-name, not the cursorname!
+DECLARE
+CURSOR cur_eds IS
+SELECT employee_id, salary, department_name
+FROM my_employees e, my_departments d
+WHERE e.department_id = d.department_id
+FOR UPDATE OF salary NOWAIT;
+BEGIN
+FOR v_eds_rec IN cur_eds LOOP
+UPDATE my_employees
+SET salary = v_eds_rec.salary * 1.1
+WHERE CURRENT OF cur_eds;
+END LOOP;
+END;
+99
+Reference
+PL/SQL User's Guide and Reference, Release 9.0.1
+Part No. A89856-01
+Copyright © 1996, 2001, Oracle Corporation. All rights
+reserved.
+Primary Authors: Tom Portfolio, John Russell
+Oracle Academy
+PLSQL S5L4 Cursor with Parameters
+PLSQL S5L5 Using Cursor for Updates
+Copyright © 2019, Oracle and/or its affiliates. All rights reserved.
+
+Module 3
+
+
+
+
+INTENDED LEARNING OUTCOME
+• Define PL/SQL exceptions.
+• Recognize unhandled exceptions.
+What is an Exception?
+5
+• An exception occurs when an error is discovered during
+the execution of a program that disrupts the normal
+operation of the program.
+• There are many possible causes of exceptions: a user
+makes a spelling mistake while typing; a program does
+not work correctly; an advertised web page does not
+exist; and so on.
+• Can you think of errors that you have come across
+while using a web site or application?
+What is an Exception?
+6
+Some examples of errors you may have seen:
+• Entering an incorrect username and/or password
+• Forgetting to include the @ in an email address
+• Entering a credit card number incorrectly
+• Entering an expiration date that has passed
+• Selecting more than one row into a single variable
+• Receiving “no rows returned” from a select statement
+Exceptions in PL/SQL
+• This example works fine. But what if
+v_country_name was 'Korea, South' instead of
+'Republic of Korea?'
+7
+DECLARE
+v_country_name countries.country_name%TYPE
+:= 'Republic of Korea';
+v_elevation countries.highest_elevation%TYPE; BEGIN
+SELECT highest_elevation INTO v_elevation
+FROM countries
+WHERE country_name = v_country_name;
+DBMS_OUTPUT.PUT_LINE(v_elevation);
+END;
+1950
+Statement processed.
+Exceptions in PL/SQL
+• When our v_country_name is not found, our code
+results in an error.
+DECLARE
+v_country_name countries.country_name%TYPE
+:='Korea, South';
+v_elevation countries.highest_elevation%TYPE; BEGIN
+SELECT highest_elevation INTO v_elevation
+FROM countries
+WHERE country_name = v_country_name; END;
+8
+Exceptions in PL/SQL
+9
+• The code does not work as expected.
+• No data was found for 'Korea, South' because the
+country name is actually stored as 'Republic of
+Korea.'
+• This type of error in PL/SQL is called an exception.
+• When code does not work as expected, PL/SQL raises
+an exception.
+• When an exception occurs, we say that an exception
+has been "raised."
+• When an exception is raised, the rest of the
+execution section of the PL/SQL block is not
+executed.
+What Is an Exception Handler?
+• An exception handler is code that defines the recovery
+actions to be performed when an exception is raised
+(that is, when an error occurs).
+• When writing code, programmers need to anticipate
+the types of errors that can occur during the execution
+of that code.
+• They need to include exception handlers in their code
+to address these errors. In a sense, exception handlers
+allow programmers to "bulletproof" their code.
+10
+What Is an Exception Handler?
+• What types of errors might programmers want to
+account for by using an exception handler?
+• System errors (for example, a hard disk is full)
+• Data errors (for example, trying to duplicate a
+primary key value)
+• User action errors (for example, data entry error)
+• Many other possibilities!
+11
+Why is Exception Handling Important?
+12
+Some reasons include:
+•Protects the user from errors (frequent errors,
+unhelpful error messages, and software crashes can
+frustrate users/customers, and this is not good).
+•Protects the database from errors (data can be lost or
+overwritten).
+•Errors can be costly, in time and resources (processes
+may slow as operations are repeated or errors are
+investigated).
+Handling Exceptions with PL/SQL
+• A block always terminates when PL/SQL raises an
+exception, but you can specify an exception handler
+to perform final actions before the block ends.
+DECLARE
+v_country_name countries.country_name%TYPE := 'Korea, South';
+v_elevation countries.highest_elevation%TYPE;
+BEGIN
+SELECT highest_elevation INTO v_elevation
+FROM countries WHERE country_name = v_country_name;
+EXCEPTION
+WHEN NO_DATA_FOUND THEN
+DBMS_OUTPUT.PUT_LINE ('Country name, ' || v_country_name || ', cannot
+be found. Re-enter the country name using the correct spelling.');
+END;
+13
+Handling Exceptions with PL/SQL
+• The exception section begins with the
+keyword EXCEPTION.
+DECLARE
+v_country_name countries.country_name%TYPE := 'Korea, South';
+v_elevation countries.highest_elevation%TYPE;
+BEGIN
+SELECT highest_elevation INTO v_elevation
+FROM countries WHERE country_name = v_country_name;
+EXCEPTION
+WHEN NO_DATA_FOUND THEN
+DBMS_OUTPUT.PUT_LINE ('Country name, ' || v_country_name || ', cannot
+be found. Re-enter the country name using the correct spelling.');
+END;
+14
+Handling Exceptions with PL/SQL
+• When an exception is handled, the PL/SQL program
+does not terminate abruptly.
+• When an exception is raised, control immediately
+shifts to the exception section and the appropriate
+handler in the exception section is executed.
+• The PL/SQL block terminates with normal, successful
+completion.
+Country name, Korea, South, cannot be found. Re-enter the
+country name using the correct spelling.
+Statement processed.
+15
+Handling Exceptions with PL/SQL
+16
+• The code at point A does not execute because
+the SELECT statement failed.
+• When an exception is raised, the rest of the
+executable section of the block is NOT executed;
+instead, the EXCEPTION section is searched for a
+suitable handler.
+DECLARE
+v_country_name countries.country_name%TYPE := 'Korea, South'; v_elevation
+countries.highest_elevation%TYPE;
+BEGIN
+SELECT highest_elevation INTO v_elevation
+FROM countries WHERE country_name = v_country_name;
+DBMS_OUTPUT.PUT_LINE(v_elevation); -- Point A
+EXCEPTION
+WHEN NO_DATA_FOUND THEN
+DBMS_OUTPUT.PUT_LINE ('Country name, ' || v_country_name || ', cannot be found.
+Re-enter the country name using the correct spelling.');
+END;
+Handling Exceptions with PL/SQL
+• The following is another example.
+• The select statement in the block is retrieving
+the last_name of Stock Clerks.
+• However, an exception is raised because more than
+one ST_CLERK exists in the data.
+DECLARE
+v_lname VARCHAR2(15); BEGIN
+SELECT last_name INTO v_lname
+FROM employees WHERE job_id = 'ST_CLERK';
+DBMS_OUTPUT.PUT_LINE('The last name of the ST_CLERK is : '||v_lname);
+END;
+ORA-01422: exact fetch returns more than requested number of rows
+17
+Handling Exceptions with PL/SQL
+• The following code includes a handler for the
+predefined Oracle server error called
+TOO_MANY_ROWS.
+• You will learn more about predefined server errors in
+the next lesson.
+DECLARE
+v_lname employees.last_name%TYPE; BEGIN
+SELECT last_name INTO v_lname
+FROM employees WHERE job_id = 'ST_CLERK';
+DBMS_OUTPUT.PUT_LINE('The last name of the ST_CLERK is: ' || v_lname);
+EXCEPTION
+WHEN TOO_MANY_ROWS THEN
+DBMS_OUTPUT.PUT_LINE ('Your select statement retrieved multiple rows.
+Consider using a cursor.');
+END;
+18
+Trapping Exceptions
+19
+• You can handle or "trap" any error by including a
+corresponding handler within the exceptionhandling section of the PL/SQL block.
+• Syntax:
+EXCEPTION
+WHEN exception1 [OR exception2 . . .] THEN
+statement1; statement2;
+. . .
+[WHEN exception3 [OR exception4 . . .] THEN
+statement1; statement2;
+. . .]
+[WHEN OTHERS THEN
+statement1; statement2;
+. . .]
+Trapping Exceptions
+20
+• Each handler consists of a WHEN clause, which
+specifies an exception name (exception1, exception 2,
+etc.), followed by THEN and one or more statements to
+be executed when that exception is raised (statement1,
+statement 2, etc.).
+• You can include any number of handlers within an
+EXCEPTION section to handle different exceptions.
+EXCEPTION
+WHEN exception1 [OR exception2 . . .] THEN
+statement1; statement2;
+. . .
+[WHEN OTHERS THEN
+statement1; statement2;
+. . .]
+Trapping
+• In the syntax, OTHERS is an optional exceptionhandling clause that traps any exceptions that have not
+been explicitly handled.
+EXCEPTION
+WHEN exception1 [OR
+statement1;
+statement2;
+. . .
+[WHEN OTHERS THEN
+statement1;
+statement2;
+. . .]
+exception2 . . .] THEN
+21
+The OTHERS Exception Handler
+• The exception-handling section traps only those
+exceptions that are specified; any other exceptions are
+not trapped unless you use the OTHERS exception
+handler.
+• The OTHERS handler traps all the exceptions that are
+not already trapped.
+• If used, OTHERS must be the last exception handler
+that is defined.
+22
+The OTHERS Exception Handler
+• Consider the following example:
+BEGIN
+...
+...
+EXCEPTION
+WHEN NO_DATA_FOUND
+statement1;
+statement2;
+...
+WHEN TOO_MANY_ROWS
+statement3;
+statement4;
+...
+WHEN OTHERS THEN
+statement5;
+statement6;
+... END;
+THEN
+THEN
+23
+Guidelines for Trapping Exceptions
+24
+• Follow these guidelines when trapping exceptions:
+• Always add exception handlers whenever there is a
+possibility of an error occurring.
+• Errors are especially likely during calculations, string
+manipulation, and SQL database operations.
+•Handle named exceptions whenever possible, instead
+of using OTHERS in exception handlers.
+• Learn the names and causes of the predefined
+exceptions.
+• Test your code with different combinations of bad data
+to see what potential errors arise.
+Guidelines for Trapping Exceptions
+• Write out debugging information in your exception
+handlers.
+• Carefully consider whether each exception handler
+should commit the transaction, roll it back, or let it
+continue.
+• No matter how severe the error is, you want to leave
+the database in a consistent state and avoid storing
+any bad data.
+25
+Reference
+PL/SQL User's Guide and Reference, Release 9.0.1
+Part No. A89856-01
+Copyright © 1996, 2001, Oracle Corporation. All rights
+reserved.
+Primary Authors: Tom Portfolio, John Russell
+Oracle Academy
+PLSQL S7L1 Handling Exceptions
+Copyright © 2019, Oracle and/or its affiliates. All rights reserved.
+
+
+
+INTENDED LEARNING OUTCOME
+• List and use different types of PL/SQL exception handlers.
+• Trap unanticipated errors.
+• Describe the effect of exception propagation in nested blocks.
+• Customize PL/SQL exception messages.
+Exception Types
+31
+• Oracle Server Errors : Predefined and non- predefined
+An Oracle Server error is an error which is recognized and
+raised automatically by the Oracle server.
+• User-defined exception
+Handling Exceptions with PL/SQL
+• There are two methods for raising an exception:
+• Implicitly (automatically) by the Oracle server:
+– An Oracle error occurs and the associated exception is raised
+automatically.
+– For example, if the error ORA-01403 occurs when no rows
+are retrieved from the database in a SELECT statement, then
+PL/SQL raises the exception NO_DATA_FOUND.
+32
+Handling Exceptions with PL/SQL
+33
+• Explicitly by the programmer:
+– Depending on the business functionality your program is
+implementing, you might have to explicitly raise an exception.
+– You raise an exception explicitly by issuing the RAISE
+statement within the block.
+– The exception being raised can be either user-defined or
+predefined.
+– User-defined exceptions are explained in the next lesson.
+Two Types of Oracle Server Errors
+• When an Oracle server error occurs, the Oracle server
+automatically raises the associated exception, skips the
+rest of the executable section of the block, and looks
+for a handler in the exception section.
+• As mentioned earlier, Oracle server errors can be
+predefined or non-predefined.
+10
+Two Types of Oracle Server Errors
+• Predefined Oracle server errors:
+• Each of these errors has a predefined name, in
+addition to a standard Oracle error number (ORA-
+#####) and message.
+• For example, if the error ORA-01403 occurs when no
+rows are retrieved from the database in a SELECT
+statement, then PL/SQL raises the predefined
+exception NO_DATA_FOUND.
+35
+Two Types of Oracle Server Errors
+• Non-predefined Oracle server errors:
+• Each of these errors has a standard Oracle error
+number (ORA-#####) and error message, but not a
+predefined name.
+• You declare your own names for these so that you can
+reference these names in the exception section.
+36
+Trapping Predefined Oracle Server Errors
+• Reference the predefined name in the
+exception handling routine.
+• Sample predefined exceptions:
+– NO_DATA_FOUND
+– TOO_MANY_ROWS
+– INVALID_CURSOR
+– ZERO_DIVIDE
+– DUP_VAL_ON_INDEX
+37
+Trapping Predefined Oracle Server Errors
+• For a complete list of predefined exceptions, see the
+PL/SQL User’s Guide and Reference.
+38
+Trapping Predefined Oracle Server Errors
+• The following example uses the TOO_MANY_ROWS
+predefined Oracle server error.
+• Note that it is not declared in the DECLARATION
+section.
+DECLARE
+v_lname VARCHAR2(15); BEGIN
+SELECT last_name INTO v_lname
+FROM employees WHERE job_id = 'ST_CLERK';
+DBMS_OUTPUT.PUT_LINE('The last name of the ST_CLERK is: ' || v_lname);
+EXCEPTION
+WHEN TOO_MANY_ROWS THEN
+DBMS_OUTPUT.PUT_LINE ('Your select statement retrieved multiple rows.
+Consider using a cursor.');
+END;
+39
+Trapping Several Predefined Oracle Server Errors
+• This example handles TOO_MANY_ROWS and
+NO_DATA_FOUND, with an OTHERS handler in case
+any other error occurs.
+DECLARE
+v_lname VARCHAR2(15); BEGIN
+SELECT last_name INTO v_lname
+FROM employees WHERE job_id = 'ST_CLERK';
+DBMS_OUTPUT.PUT_LINE('The last name
+of EXCEPTION
+WHEN TOO_MANY_ROWS THEN
+DBMS_OUTPUT.PUT_LINE ('Select
+statement WHEN NO_DATA_FOUND THEN
+DBMS_OUTPUT.PUT_LINE ('Select
+statement WHEN OTHERS THEN
+the ST_CLERK is:
+'||v_lname);
+found multiple
+rows');
+found no rows');
+DBMS_OUTPUT.PUT_LINE ('Another type of error
+occurred'); END;
+40
+Trapping Non-Predefined Oracle Server Errors
+41
+• Non-predefined exceptions are similar to predefined
+exceptions, except they do not have predefined
+names.
+• They do have a standard Oracle error number (ORA-
+#####) and error message.
+• To use specific handlers (rather than handling through
+an OTHERS clause), you create your own names for
+them in the DECLARE section and associate the names
+with the specific ORA-##### numbers using the
+PRAGMA EXCEPTION_INIT function.
+Trapping Non-Predefined Oracle Server Errors
+42
+• You can trap a non-predefined Oracle server error by
+declaring it first.
+• The declared exception is raised implicitly. In PL/SQL,
+the PRAGMA EXCEPTION_INIT tells the compiler to
+associate an exception name with a specific Oracle
+error number.
+• This allows you to refer to any Oracle Server exception
+by a name and to write a specific handler for it.
+Non-Predefined Error
+• Examine the following example.
+• The code above results in the error message below.
+BEGIN
+INSERT INTO departments
+(department_id, department_name) VALUES (280, NULL);
+END;
+ORA-01400: cannot insert NULL into
+("US_1217_S19_PLSQL"."DEPARTMENTS"."DEPARTMENT_NAME")
+43
+Non-Predefined Error
+20
+• The INSERT statement tries to insert the value NULL
+for the department_name column of the departments
+table.
+• However, the operation is not successful because
+department_name is a NOT NULL column.
+• There is no predefined error name for violating a NOT
+NULL constraint.
+• The following slides will demonstrate how to "handle"
+non-predefined exceptions.
+Non-Predefined Error
+• Declare the name of the exception in the
+declarative section.
+DECLARE
+e_insert_excep EXCEPTION;
+PRAGMA EXCEPTION_INIT(e_insert_excep, -01400);
+BEGIN
+INSERT INTO departments (department_id,
+department_name) VALUES (280, NULL);
+EXCEPTION
+WHEN e_insert_excep THEN
+DBMS_OUTPUT.PUT_LINE('INSERT FAILED'); END;
+Syntax:
+exception_name EXCEPTION;
+1
+45
+Non-Predefined Error
+• Associate the declared exception name with the
+standard Oracle server error number using the
+PRAGMA EXCEPTION_INIT function.
+DECLARE
+e_insert_excep EXCEPTION;
+PRAGMA
+BEGIN
+INSERT
+EXCEPTION_INIT(e_insert_excep, -01400);
+INTO departments
+(department_id, department_name)
+VALUES (280, NULL);
+EXCEPTION
+WHEN e_insert_
+THEN
+DBMS_OUTPUT.P
+END;
+excep
+UT_LINE('INSERT FAILED');
+2
+Syntax:
+PRAGMA EXCEPTION_INIT(exception_name, -number);
+46
+Non-Predefined Error
+• Reference the declared exception name within a
+WHEN clause in the exception-handling section.
+DECLARE
+e_insert_excep EXCEPTION;
+PRAGMA EXCEPTION_INIT(e_insert_excep, -01400);
+BEGIN
+INSERT INTO departments (department_id,
+department_name) VALUES (280, NULL);
+EXCEPTION
+WHEN e_insert_excep THEN
+DBMS_OUTPUT.PUT_LINE('INSERT FAILED');
+END;
+3
+47
+Functions for Trapping Exceptions
+• When an exception occurs, you can retrieve the
+associated error code or error message by using two
+functions.
+• Based on the values of the code or the message, you
+can decide which subsequent actions to take.
+– SQLERRM returns character data containing the message
+associated with the error number.
+– SQLCODE returns the numeric value for the error code.
+(You can assign it to a NUMBER variable.)
+48
+Functions for Trapping Exceptions
+49
+• Note : +100 is an internationally-agreed code when
+no rows are returned from a query.
+SQLCODE Value Description
+0 No exception encountered
+1 User defined exception
++100 NO_DATA_FOUND exception
+Negative number Another Oracle Server error number
+Functions for Trapping Exceptions
+• You cannot use SQLCODE or SQLERRM directly in an SQL
+statement.
+• Instead, you must assign their values to local variables,
+then use the variables in the SQL statement, as shown
+in the following example:
+DECLARE
+v_error_code NUMBER; v_error_message VARCHAR2(255);
+BEGIN ... EXCEPTION
+WHEN OTHERS THEN ROLLBACK;
+v_error_code := SQLCODE; v_error_message := SQLERRM;
+INSERT INTO error_log(e_user, e_date, error_code, error_message)
+VALUES(USER, SYSDATE, v_error_code, v_error_message);
+END;
+50
+
+Exception Types
+52
+• This lesson discusses user-defined errors.
+Exception Description Instructions for Handling
+Predefined Oracle
+server error
+Most common PL/SQL
+errors (about 20 or so
+that are named)
+You need not declare these
+exceptions. They are predefined
+by the Oracle server and are
+raised implicitly (automatically).
+Non-predefined
+Oracle server error
+Other PL/SQL errors
+(no name)
+Declare within the declarative
+section and allow the Oracle
+Server to raise them implicitly
+(automatically).
+User-defined error Defined by the
+programmer
+Declare within the declarative
+section, and raise explicitly.
+Trapping User-Defined Exceptions
+• PL/SQL allows you to define your own exceptions.
+• You define exceptions depending on the
+requirements of your application.
+Declarative section
+Name the
+exception.
+Explicitly raise the
+exception by using
+the RAISE
+statement.
+Exception-handling
+section
+Handle the raised
+exception.
+Declare Reference
+53
+Raise
+Executable section
+Trapping User-Defined Exceptions
+•One example of the need for a user-defined exception is
+during the input of data.
+• Assume your program prompts the user for a department
+number and name so it can update the name of the
+department.
+DECLARE
+v_name VARCHAR2(20):= 'Accounting';
+v_deptno NUMBER := 27;
+BEGIN
+UPDATE departments
+SET department_name = v_name WHERE
+department_id = v_deptno;
+END;
+54
+Trapping User-Defined Exceptions
+• What happens if the user enters an invalid department
+number?
+• Oracle doesn't see this as an error.
+• You will need a user-defined error to catch this situation.
+DECLARE
+v_name VARCHAR2(20):= 'Accounting';
+v_deptno NUMBER := 27;
+BEGIN
+UPDATE departments
+SET department_name = v_name WHERE
+department_id = v_deptno;
+END;
+55
+Trapping User-Defined Exceptions
+• What happens when the user enters an invalid
+department?
+• The code as written doesn't produce an Oracle error.
+• You need to create a user-defined error to handle this
+situation.
+• You do this by:
+– 1. Declaring the name of the user-defined exception within the
+declarative section.
+– 2. Using the RAISE statement to raise the exception
+explicitly within the executable section.
+IF SQL%NOTFOUND THEN RAISE e_invalid_department;
+56
+e_invalid_department EXCEPTION;
+Trapping User-Defined Exceptions
+10
+• You do this by:
+– 3. Referencing the declared exception name within a WHEN
+clause in the exception-handling section.
+• These three "steps" are similar to what we did in
+the previous lesson with non-predefined Oracle
+errors.
+• The differences are, no PRAGMA EXCEPTION_INIT is
+required and you must explicitly raise the exception
+using the RAISE command.
+EXCEPTION
+WHEN e_invalid_department THEN DBMS_OUTPUT.PUT_LINE('No
+such department id.');
+Trapping User-Defined Exceptions
+• The completed code with the "steps" indicated.
+DECLARE
+e_invalid_department EXCEPTION;
+v_name VARCHAR2(20):='Accounting';
+v_deptno NUMBER := 27;
+BEGIN
+UPDATE departments
+SET department_name = v_name
+WHERE department_id = v_deptno;
+IF SQL%NOTFOUND THEN
+RAISE e_invalid_department;
+END IF;
+EXCEPTION
+WHEN e_invalid_department
+THEN DBMS_OUTPUT.PUT_LINE('No such department id.');
+END;
+1
+2
+3
+58
+The RAISE Statement
+59
+• You can use the RAISE statement to raise exceptions.
+• Raising a user-defined exception:
+• Raising an Oracle server error:
+IF v_grand_total = 0 THEN RAISE e_invalid_total;
+ELSE
+DBMS_OUTPUT.PUT_LINE(v_num_students / v_grand_total); END IF;
+IF v_grand_total = 0 THEN RAISE ZERO_DIVIDE;
+ELSE
+DBMS_OUTPUT.PUT_LINE(v_num_students / v_grand_total); END IF;
+The RAISE_APPLICATION_ERROR Procedure
+60
+• You can use the RAISE_APPLICATION_ERROR procedure
+to return user-defined error messages from stored
+subprograms.
+• The following slides explain the syntax for using
+RAISE_APPLICATION_ERROR
+• The main advantage of using this procedure instead of
+RAISE, is that RAISE_APPLICATION_ERROR allows you
+to associate your own error number and meaningful
+message with the exception.
+The RAISE_APPLICATION_ERROR Syntax
+61
+• The error_number must fall between -20000 and
+-20999.
+• This range is reserved by Oracle for programmer use,
+and is never used for predefined Oracle server
+errors.
+• message is the user-specified message for the
+exception.
+• It is a character string up to 2,048 bytes long.
+RAISE_APPLICATION_ERROR (error_number,
+message[, {TRUE | FALSE}]);
+The RAISE_APPLICATION_ERROR Syntax
+62
+• TRUE | FALSE is an optional Boolean parameter.
+• If TRUE, the error is placed on the stack of previous
+errors.
+• If FALSE—the default—the error replaces all
+previous errors.
+RAISE_APPLICATION_ERROR (error_number,
+message[, {TRUE | FALSE}]);
+The RAISE_APPLICATION_ERROR Usage
+• You can use the RAISE_APPLICATION_ERROR in
+two different places:
+• Executable section
+• Exception section
+63
+RAISE_APPLICATION_ERROR in the
+Executable Section
+•When called, the RAISE_APPLICATION_ERROR
+procedure displays the error number and message to
+the user.
+• This process is consistent with other Oracle server
+errors.
+DECLARE
+v_mgr
+BEGIN
+PLS_INTEGER := 123;
+DELETE FROM employees
+WHERE manager_id = v_mgr; IF
+SQL%NOTFOUND THEN
+RAISE_APPLICATION_ERROR(-20202,
+'This is not a valid manager'); END
+IF;
+END;
+64
+RAISE_APPLICATION_ERROR in the
+Exception Section
+DECLARE
+v_mgr PLS_INTEGER := 27;
+v_employee_id
+BEGIN
+SELECT employee_id
+FROM employees WHERE
+manager_id
+employees.employee_id%TYPE;
+INTO v_employee_id
+= v_mgr;
+DBMS_OUTPUT.PUT_LINE('Employee #' || v_employee_id ||
+' works for manager #' ||
+EXCEPTION
+WHEN NO_DATA_FOUND THEN
+RAISE_APPLICATION_ERROR(-20201,
+'This manager has no
+employees'); WHEN TOO_MANY_ROWS THEN
+RAISE_APPLICATION_ERROR(-
+20202,
+'Too many employees were
+found.'); END;
+v_mgr || '.');
+65
+Using the RAISE_APPLICATION_ERROR with
+a User-Defined Exception
+DECLARE
+e_name EXCEPTION;
+PRAGMA EXCEPTION_INIT(e_name, -20999);
+v_last_name employees.last_name%TYPE := 'Silly Name';
+BEGIN
+DELETE FROM employees
+WHERE last_name = v_last_name;
+IF SQL%ROWCOUNT = 0 THEN
+RAISE_APPLICATION_ERROR(-20999, 'Invalid last name'); ELSE
+DBMS_OUTPUT.PUT_LINE(v_last_name ||' deleted'); END IF;
+EXCEPTION
+WHEN e_name THEN
+DBMS_OUTPUT.PUT_LINE('Valid last names are: ');
+FOR c1 IN (SELECT DISTINCT last_name FROM employees) LOOP
+DBMS_OUTPUT.PUT_LINE(c1.last_name); END LOOP;
+WHEN OTHERS THEN
+DBMS_OUTPUT.PUT_LINE('Error deleting from employees');
+END;
+66
+Reference
+PL/SQL User's Guide and Reference, Release 9.0.1
+Part No. A89856-01
+Copyright © 1996, 2001, Oracle Corporation. All rights
+reserved.
+Primary Authors: Tom Portfolio, John Russell
+Oracle Academy
+PLSQL S7L2 Trapping Oracle Server Exceptions
+PLSQL S7L3 Trapping User Defined Exceptions
+Copyright © 2019, Oracle and/or its affiliates. All rights reserved.
+
+Module 4
+
+
+
+
+INTENDED LEARNING OUTCOME
+• Identify the benefits of modularized and layered subprogram design.
+• Create and call procedures.
+4
+Differences Between Anonymous Blocks
+and Subprograms
+• As the word “anonymous” indicates, anonymous blocks
+are unnamed executable PL/SQL blocks.
+• Because they are unnamed, they can neither be reused
+nor stored in the database for later use.
+• While you can store anonymous blocks on your PC, the
+database is not aware of them, so no one else can
+share them.
+• Procedures and functions are PL/SQL blocks that are
+named, and they are also known as subprograms.
+5
+Differences Between Anonymous Blocks
+and Subprograms
+6
+• These subprograms are compiled and stored in the
+database.
+• The block structure of the subprograms is similar to
+the structure of anonymous blocks.
+• While subprograms can be explicitly shared, the
+default is to make them private to the owner’s
+schema.
+• Later subprograms become the building blocks of
+packages and triggers.
+Differences Between Anonymous Blocks
+and Subprograms
+• Anonymous blocks
+DECLARE (Optional) Variables, cursors,
+etc.;
+BEGIN (Mandatory)
+SQL and PL/SQL statements; EXCEPTION
+(Optional)
+WHEN exception-handling actions; END;
+(Mandatory)
+• Subprograms
+(procedures)
+7
+CREATE [OR REPLACE] PROCEDURE name [parameters] IS|AS (Mandatory) Variables,
+cursors, etc.; (Optional)
+BEGIN (Mandatory)
+SQL and PL/SQL statements; EXCEPTION (Optional)
+WHEN exception-handling actions; END [name]; (Mandatory)
+Differences Between Anonymous Blocks
+and Subprograms
+8
+• The alternative to an anonymous block is a named
+block. How the block is named depends on what
+you are creating.
+• You can create :
+– a named procedure (does not return values except as out
+parameters)
+– a function (must return a single value not including out
+parameters)
+– a package (groups functions and procedures together)
+– a trigger
+Differences Between Anonymous Blocks
+and Subprograms
+10
+• The keyword DECLARE is replaced by CREATE
+PROCEDURE procedure-name IS | AS.
+• In anonymous blocks, DECLARE states, "this is the start
+of a block."
+• Because CREATE PROCEDURE states, "this is the start
+of a subprogram," we do not need (and must not use)
+DECLARE.
+9
+10
+Anonymous Blocks Subprograms
+Unnamed PL/SQL blocks Named PL/SQL blocks
+Compiled on every execution Compiled only once, when created
+Not stored in the database Stored in the database
+Cannot be invoked by other
+applications
+They are named and therefore can be
+invoked by other applications
+Do not return values Subprograms called functions must
+return values
+Cannot take parameters Can take parameters
+Differences Between Anonymous Blocks
+and Subprograms
+11
+• The keyword DECLARE is replaced by CREATE
+PROCEDURE procedure-name IS | AS.
+• In anonymous blocks, DECLARE states, "this is the start
+of a block."
+• Because CREATE PROCEDURE states, "this is the start
+of a subprogram," we do not need (and must not use)
+DECLARE.
+Differences Between Anonymous Blocks
+and Subprograms
+Benefits of Subprograms
+• Procedures and functions have many benefits due to
+the modularizing of the code:
+– Easy maintenance: Modifications need only be done once
+to improve multiple applications and minimize testing.
+– Code reuse: Subprograms are located in one place.
+• When compiled and validated, they can be used and
+reused in any number of applications.
+12
+Benefits of Subprograms
+• Improved data security: Indirect access to database
+objects is permitted by the granting of security
+privileges on the subprograms.
+• By default, subprograms run with the privileges of
+the subprogram owner, not the privileges of the user.
+• Data integrity: Related actions can be grouped into a
+block and are performed together (“Statement
+Processed”) or not at all.
+13
+• Improved performance: You can reuse compiled PL/SQL
+code that is stored in the shared SQL area cache of the
+server.
+• Subsequent calls to the subprogram avoid compiling
+the code again.
+• Also, many users can share a single copy of the
+subprogram code in memory.
+• Improved code clarity: By using appropriate names and
+conventions to describe the action of the routines, you
+can reduce the need for comments, and enhance the
+clarity of the code.
+14
+Benefits of Subprograms
+Procedures and Functions : Similarities
+• Are named PL/SQL blocks
+• Are called PL/SQL subprograms
+• Have block structures similar to anonymous
+blocks:
+– Optional parameters
+– Optional declarative section (but the DECLARE keyword
+changes to IS or AS)
+– Mandatory executable section
+– Optional section to handle exceptions
+• Procedures and functions can both return data as
+OUT and IN OUT parameters.
+15
+Procedures and Functions : Differences
+16
+• A function MUST return a value using the RETURN
+statement.
+• A procedure can only return a value using an OUT or an
+IN OUT parameter.
+• The return statement in a function returns control to the
+calling program and returns the results of the function.
+• The return statement within a procedure is optional. It
+returns control to the calling program before all of the
+procedure's code has been executed.
+• Functions can be called from SQL, procedures cannot.
+• Functions are considered expressions, procedures are
+not.
+What Is a Procedure?
+17
+• A procedure is a named PL/SQL block that can accept
+parameters.
+• Generally, you use a procedure to perform an action
+(sometimes called a “side-effect”).
+• A procedure is compiled and stored in the database as
+a schema object.
+– Shows up in USER_OBJECTS as an object type of PROCEDURE
+– More details in USER_PROCEDURES
+– Detailed PL/SQL code in USER_SOURCE
+Syntax for Creating Procedures
+• Parameters are optional
+• Mode defaults to IN
+• Datatype can be either explicit (for example,
+VARCHAR2) or implicit with %TYPE
+• Body is the same as an anonymous block
+CREATE [OR REPLACE] PROCEDURE procedure_name
+[(parameter1 [mode1] datatype1, parameter2 [mode2] datatype2,
+. . .)]
+IS|AS
+procedure_body;
+18
+Syntax for Creating Procedures
+• Use CREATE PROCEDURE followed by the name,
+optional parameters, and keyword IS or AS.
+• Add the OR REPLACE option to overwrite an
+existing procedure.
+• Write a PL/SQL block containing local variables, a
+BEGIN, and an END (or END procedure_name).
+20
+CREATE [OR REPLACE] PROCEDURE procedure_name
+[(parameter1 [mode] datatype1, parameter2
+[mode] datatype2, ...)]
+IS|AS
+[local_variable_declarations; …] BEGIN
+-- actions;
+END [procedure_name];
+PL/SQL Block
+19
+Procedure: Example
+• In the following example, the add_dept procedure
+inserts a new department with the department_id
+280 and department_name ST-Curriculum.
+• The procedure declares two variables, v_dept_id and
+v_dept_name, in the declarative section.
+CREATE OR REPLACE PROCEDURE add_dept IS
+20
+v_dept_id
+v_dept_name
+BEGIN
+v_dept_id
+v_dept_name
+INSERT INTO
+dept.department_id%TYPE;
+dept.department_name%TYPE;
+:= 280;
+:= 'ST-Curriculum'; dept(department_id, department_name)
+VALUES(v_dept_id, v_dept_name);
+DBMS_OUTPUT.PUT_LINE('Inserted '|| SQL%ROWCOUNT ||'
+row.’);
+END;
+Procedure: Example
+• The declarative section of a procedure starts
+immediately after the procedure declaration and
+does not begin with the keyword DECLARE.
+• This procedure uses the SQL%ROWCOUNT cursor
+attribute to check if the row was successfully
+inserted. SQL%ROWCOUNT should return 1 in this
+case.
+CREATE OR REPLACE PROCEDURE add_dept IS
+v_dept_id
+v_dept_name
+BEGIN
+v_dept_id
+v_dept_name
+INSERT INTO
+dept.department_id%TYPE;
+dept.department_name%TYPE;
+:= 280;
+:= 'ST-Curriculum';
+dept(department_id, department_name)
+VALUES(v_dept_id, v_dept_name);
+DBMS_OUTPUT.PUT_LINE('Inserted '|| SQL%ROWCOUNT || ' row.');
+END;
+21
+Invoking Procedures
+• You can invoke (execute) a procedure from:
+– An anonymous block
+– Another procedure
+– A calling application
+• Note: You cannot invoke a procedure from inside a
+SQL statement such as SELECT.
+22
+Invoking the Procedure from
+Application Express
+23
+• To invoke (execute) a procedure in Oracle
+Application Express, write and run a small
+anonymous block that invokes the procedure.
+• For example:
+• The select statement at the end confirms that the
+row was successfully inserted.
+BEGIN
+add_dept; END;
+SELECT department_id, department_name FROM dept WHERE department_id=280;
+Correcting Errors in
+CREATE PROCEDURE Statements
+24
+• If compilation errors exist, Application Express
+displays them in the output portion of the SQL
+Commands window.
+• You must edit the source code to make corrections.
+• When a subprogram is CREATED, the source code is
+stored in the database even if compilation
+errors occurred.
+Correcting Errors in
+CREATE PROCEDURE Statements
+• After you have corrected the error in the code, you
+need to recreate the procedure.
+• There are two ways to do this:
+– Use a CREATE OR REPLACE PROCEDURE statement to
+overwrite the existing code (most common).
+– DROP the procedure first and then execute the CREATE
+PROCEDURE statement (less common).
+25
+Saving Your Work
+• Once a procedure has been created successfully, you
+should save its definition in case you need to modify
+the code later.
+26
+Local Subprograms
+27
+• When one procedure invokes another procedure,
+we would normally create them separately, but we
+can create them together as a single procedure if we
+like.
+CREATE OR REPLACE PROCEDURE subproc
+...
+END subproc;
+CREATE OR REPLACE PROCEDURE mainproc
+...
+IS BEGIN
+...
+subproc(...);
+...
+END mainproc;
+• All the code is now in one place, and is easier to read and
+maintain.
+• The nested subprogram's scope is limited to the
+procedure within which it is defined; SUBPROC can be
+invoked from MAINPROC, but from nowhere else.
+CREATE OR REPLACE PROCEDURE mainproc
+...
+IS
+PROCEDURE subproc (...) IS BEGIN
+...
+END subproc; BEGIN
+...
+subproc(...);
+...
+END mainproc;
+30
+Local Subprograms
+28
+• Every time an employee is deleted, we need to insert
+a row into a logging table.
+• The nested procedure LOG_EMP is called a Local
+Subprogram.
+CREATE OR REPLACE PROCEDURE delete_emp
+(p_emp_id IN employees.employee_id%TYPE)
+IS
+PROCEDURE log_emp (p_emp IN employees.employee_id%TYPE) IS
+BEGIN
+INSERT INTO logging_table VALUES(p_emp, ...); END log_emp;
+BEGIN
+DELETE FROM employees
+WHERE employee_id = p_emp_id; log_emp(p_emp_id);
+END delete_emp;
+29
+Local Subprograms
+Reference
+PL/SQL User's Guide and Reference, Release 9.0.1
+Part No. A89856-01
+Copyright © 1996, 2001, Oracle Corporation. All rights
+reserved.
+Primary Authors: Tom Portfolio, John Russell
+Oracle Academy
+PLSQL S8L1 Creating Procedures
+Copyright © 2019, Oracle and/or its affiliates. All rights reserved.
+30
+
+
+
+INTENDED LEARNING OUTCOME
+• Use formal and actual parameters.
+• Use positional, named, or mixed notation for passing parameters.
+• Identify the available parameter-passing modes.
+34
+What are Parameters?
+35
+• Parameters pass or communicate data between the
+caller and the subprogram.
+• You can think of parameters as a special form of a
+variable, whose input values are initialized by the
+calling environment when the subprogram is called,
+and whose output values are returned to the calling
+environment when the subprogram returns control to
+the caller.
+• By convention, parameters are often named with a
+“p_” prefix.
+What Are Parameters?
+• The change_grade procedure accepts three
+parameters: p_student_id, p_class_id, and p_grade.
+• These parameters act like local variables in the
+change_grade procedure.
+8
+PROCEDURE change_grade (p_student_id IN NUMBER, p_class_id IN NUMBER, p_grade IN
+VARCHAR2) IS BEGIN
+…
+UPDATE grade_table SET grade = p_grade
+WHERE student_id = p_student_id AND class_id = p_class_id;
+… END;
+Student id is 1023
+The math class id is
+543 The new grade is B
+Calling
+environment
+1023
+543
+B
+36
+What Are Arguments?
+• Parameters are commonly referred to as arguments.
+• However, arguments are more appropriately thought of
+as the actual values assigned to the parameter
+variables when the subprogram is called at runtime.
+Student id is 1023
+The math class id is
+543 The new grade is B
+1023
+543
+B
+9 37
+What Are Arguments?
+• Even though parameters are a kind of variable, IN parameters are
+treated as constants within the subprogram and cannot be
+changed by the subprogram.
+• In the previous example, 1023 is an argument passed in to the
+p_student_id parameter.
+Student id is 1023
+The math class id is
+543 The new grade is B
+1023
+543
+B
+10 38
+Creating Procedures with Parameters
+• The example shows a procedure with two
+parameters.
+• Running this first statement creates the raise_salary
+procedure in the database.
+• The second example executes the procedure, passing
+the arguments 176 and 10 to the two parameters.
+CREATE OR REPLACE PROCEDURE raise_salary
+(p_id IN my_employees.employee_id%TYPE,
+p_percent IN NUMBER)
+IS BEGIN
+UPDATE my_employees
+SET
+WHERE
+salary = salary * (1 + p_percent/100)
+employee_id = p_id;
+END raise_salary;
+BEGIN raise_salary(176, 10); END;
+39
+Invoking Procedures with Parameters
+40
+• Create an anonymous block and use a direct call
+inside the executable section of the block.
+• Where you want to call the new procedure, enter the
+procedure name and parameter values (arguments).
+• For example:
+• You must enter the arguments in the same order
+as they are declared in the procedure.
+BEGIN
+raise_salary (176, 10); END;
+Invoking Procedures with Parameters
+• To invoke a procedure from another procedure, use a
+direct call inside an executable section of the block.
+• At the location of calling the new procedure, enter
+the procedure name and parameter arguments.
+13
+CREATE OR REPLACE PROCEDURE process_employees
+IS
+CURSOR emp_cursor IS SELECT employee_id
+FROM my_employees; BEGIN
+FOR v_emp_rec IN emp_cursor
+LOOP
+raise_salary(v_emp_rec.employee_id, 10);
+END LOOP;
+END process_employees;
+41
+Types of Parameters
+• There are two types of parameters: Formal and Actual.
+• A parameter-name declared in the procedure heading
+is called a formal parameter.
+• The corresponding parameter-name (or value) in the
+calling environment is called an actual parameter.
+14 42
+Types of Parameters
+• In the following example, can you identify
+which parameter is the formal parameter and
+which parameter is the actual parameter?
+15
+CREATE OR REPLACE PROCEDURE fetch_emp
+(p_emp_id IN employees.employee_id%TYPE) IS
+... END;
+/* Now call the procedure from an anonymous block or
+subprogram */
+BEGIN
+...
+fetch_emp(v_emp_id);
+... END;
+43
+Formal Parameters
+44
+• Formal parameters are variables that are declared in
+the parameter list of a subprogram specification.
+• In the following example, in the procedure raise_sal,
+the identifiers p_id and p_sal represent formal
+parameters.
+• Notice that the formal parameter data types do
+not have sizes.
+• For instance p_sal is NUMBER, not NUMBER(6,2).
+CREATE PROCEDURE raise_sal(p_id IN NUMBER, p_sal IN NUMBER)
+IS
+BEGIN
+...
+END raise_sal;
+Actual Parameters
+• Actual parameters can be literal values, variables, or
+expressions that are sent to the parameter list of a
+called subprogram.
+• In the following example, a call is made to raise_sal,
+where the a_emp_id variable is the actual parameter
+for the p_id formal parameter, and 100 is the
+argument (the actual passed value).
+a_emp_id := 100;
+raise_sal(a_emp_id, 2000);
+45
+Actual Parameters
+Actual parameters:
+•Are associated with formal parameters during the
+subprogram call
+•Can also be expressions, as in the following example:
+raise_sal(a_emp_id, v_raise + 100);
+46
+Formal and Actual Parameters
+• The formal and actual parameters should be of compatible data
+types.
+• If necessary, before assigning the value, PL/SQL converts the
+data type of the actual parameter value to that of the formal
+parameter.
+47
+Formal and Actual Parameters
+• For instance, you can pass in a salary of '1000.00' in
+single quotes, so it is coming in as the letter 1 and the
+letters zero, etc., which get converted into the
+number one thousand.
+• This is slower and should be avoided if possible.
+• You can find out the data types that are expected by
+using the command DESCRIBE proc_name.
+20 48
+49
+Procedural Parameter Modes
+50
+• Parameter modes are specified in the formal parameter
+declaration, after the parameter name and before its
+data type.
+• Parameter-passing modes:
+– An IN parameter (the default) provides values for a
+subprogram to process.
+– An OUT parameter returns a value to the caller.
+– An IN OUT parameter supplies an input value, which can be
+returned (output) as a modified value.
+What are Parameter Modes?
+Modes
+IN (default)
+OUT
+IN OUT
+Calling
+environment
+Procedure
+51
+Default Mode: IN
+• The IN mode is the default if no mode is specified.
+• IN parameters can only be read within the procedure.
+• They cannot be modified.
+CREATE PROCEDURE procedure(param [mode] datatype)
+...
+CREATE OR REPLACE PROCEDURE raise_salary
+IS BEGIN
+UPDATE my_employees
+SET
+WHERE
+salary = salary * (1 + p_percent/100)
+employee_id = p_id;
+END raise_salary;
+(p_id IN my_employees.employee_id%TYPE,
+p_percent IN NUMBER)
+52
+Using OUT Parameters: Example
+CREATE OR
+(p_id
+p_name
+REPLACE PROCEDURE query_emp
+IN employees.employee_id%TYPE,
+OUT employees.last_name%TYPE,
+p_salary OUT employees.salary%TYPE) IS
+BEGIN
+END query_emp;
+DECLARE
+a_emp_name
+a_emp_sal
+employees.last_name%TYPE;
+employees.salary%TYPE;
+BEGIN
+query_emp(178, a_emp_name, a_emp_sal); ...
+END;
+SELECT last_name, salary INTO p_name, p_salary
+FROM employees
+WHERE employee_id = p_id;
+53
+Using the Previous OUT Example
+• Create a procedure with OUT parameters to retrieve
+information about an employee.
+• The procedure accepts the value 178 for employee ID
+and retrieves the name and salary of the employee
+with ID 178 into the two OUT parameters.
+• The query_emp procedure has three formal
+parameters.
+• Two of them are OUT parameters that return values to
+the calling environment, shown in the code box at the
+bottom of the previous slide.
+54
+Using the Previous OUT Example
+• The procedure accepts an employee ID value through
+the p_id parameter.
+• The a_emp_name and a_emp_sal variables are
+populated with the information retrieved from the
+query into their two corresponding OUT parameters.
+• Make sure that the data type for the actual parameter
+variables used to retrieve values from OUT
+parameters has a size large enough to hold the data
+values being returned.
+55
+Viewing OUT Parameters in
+Application Express
+• Use PL/SQL variables that are displayed with calls to
+the DBMS_OUTPUT.PUT_LINE procedure.
+DECLARE
+a_emp_name employees.last_name%TYPE; a_emp_sal
+employees.salary%TYPE;
+BEGIN
+query_emp(178, a_emp_name, a_emp_sal);
+DBMS_OUTPUT.PUT_LINE('Name: ' || a_emp_name);
+DBMS_OUTPUT.PUT_LINE('Salary: ' || a_emp_sal);
+END;
+Name: Grant
+Salary: 7700
+56
+Using IN OUT Parameters: Example
+CREATE OR REPLACE PROCEDURE format_phone
+(p_phone_no IN OUT VARCHAR2) IS
+BEGIN
+p_phone_no := '(' || SUBSTR(p_phone_no, 1, 3) || ')' ||
+SUBSTR(p_phone_no, 4, 3) ||'-' ||
+SUBSTR(p_phone_no, 7);
+END format_phone;
+Calling environment
+p_phone_no (before the call) p_phone_no (after the call)
+'8006330575' '(800)633-0575'
+57
+Using the Previous IN OUT Example
+• Using an IN OUT parameter, you can pass a value into
+a procedure that can be updated within the
+procedure.
+• The actual parameter value supplied from the calling
+environment can return as either of the following:
+– The original unchanged value
+– A new value that is set within the procedure
+58
+Using the Previous IN OUT Example
+• The example in the previous slide creates a procedure
+with an IN OUT parameter to accept a 10-character
+string containing digits for a phone number.
+• The procedure returns the phone number formatted
+with parentheses around the first three characters and
+a hyphen after the sixth digit.
+• For example, the phone string ‘8006330575’ is
+returned as ‘(800)633-0575’.
+59
+Calling the Previous IN OUT Example
+60
+• The following code creates an anonymous block that
+declares a_phone_no, assigns the unformatted phone
+number to it, and passes it as an actual parameter to
+the FORMAT_PHONE procedure.
+• The procedure is executed and returns an updated
+string in the a_phone_no variable, which is then
+displayed.
+DECLARE
+a_phone_no VARCHAR2(13); BEGIN
+a_phone_no := '8006330575' ; format_phone(a_phone_no);
+DBMS_OUTPUT.PUT_LINE('The formatted number is: ' ||
+a_phone_no);
+END;
+Syntax for Passing Parameters
+There are three ways of passing parameters from the calling
+environment:
+•Positional: Lists the actual parameters in the same order as the
+formal parameters (most common method)
+•Named: Lists the actual parameters in arbitrary order and uses
+the association operator ( ‘=>' which is an equal and an arrow
+together) to associate a named formal parameter with its actual
+parameter
+•Combination: Lists some of the actual parameters as positional
+(no special operator) and some as named (with the => operator).
+61
+Parameter Passing: Examples
+• Passing by named notation
+VALUES (departments_seq.NEXTVAL, p_name, p_loc);
+END add_dept;
+• Passing by positional notation
+62
+CREATE OR REPLACE PROCEDURE add_dept(
+p_name
+p_loc
+BEGIN
+INSERT
+IN my_depts.department_name%TYPE,
+IN my_depts.location_id%TYPE) IS
+INTO my_depts(department_id,
+department_name, location_id)
+add_dept ('EDUCATION', 1400);
+add_dept (p_loc=>1400, p_name=>'EDUCATION');
+Parameter Passing: Examples
+VALUES (departments_seq.NEXTVAL, p_name, p_loc);
+END add_dept;
+• Passing by combination notation
+63
+• Note : If Combination notation is used, the
+positional parameters must come first before the
+named parameters.
+add_dept ('EDUCATION', p_loc=>1400);
+CREATE OR REPLACE PROCEDURE add_dept(
+p_name
+p_loc
+BEGIN
+INSERT
+IN my_depts.department_name%TYPE,
+IN my_depts.location_id%TYPE) IS
+INTO my_depts(department_id,
+department_name, location_id)
+Parameter Passing
+• Will the following call execute successfully?
+• Answer: No, because when using the combination
+notation, positional notation parameters must be
+listed before named notation parameters.
+add_dept (p_loc => 1400,
+'EDUCATION');
+64
+Parameter Passing
+65
+• Will the following call execute successfully?
+• Answer: No. You must provide a value for each
+parameter unless the formal parameter is assigned
+a default value.
+add_dept ('EDUCATION');
+ORA-06550: line 2, column 1:
+PLS-00306: wrong number or types of arguments in call to
+'ADD_DEPT'
+ORA-06550: line 2, column 1: PL/SQL: Statement ignored
+1.begin
+2.add_dept(‘EDUCATION’);
+3.end;
+Parameter Passing Example
+66
+The following procedure with three parameters may be
+called in the following ways:
+CREATE OR REPLACE PROCEDURE show_emps
+(p_emp_id IN NUMBER, p_department_id
+p_hiredate IN DATE)…
+IN NUMBER,
+• Positional notation :
+show_emps (101, 10, ’01-dec-2006’)
+• Named notation :
+show_emps(p_department_id => 10,
+p_hiredate => ’01-dec-1007’, p_emp_id => 101
+• Combination notation :
+show_emps(101, p_hiredate => ’01-dec-2007’, p_department_id =
+10)
+Using the DEFAULT Option for IN Parameters
+67
+• You can assign a default value for formal IN parameters.
+• This provides flexibility when passing parameters.
+• Using the DEFAULT keyword makes it easier to
+identify that a parameter has a default value.
+CREATE OR REPLACE PROCEDURE add_dept(
+p_name my_depts.department_name%TYPE := 'Unknown', p_loc
+my_depts.location_id%TYPE DEFAULT 1400)
+IS BEGIN
+INSERT INTO my_depts (...)
+VALUES (departments_seq.NEXTVAL, p_name, p_loc); END add_dept;
+Using the DEFAULT Option for IN Parameters
+• The code on the previous slide shows two ways
+of assigning a default value to an IN parameter.
+• The two ways shown use:
+– The assignment operator (:=), as shown for the p_name
+parameter
+– The DEFAULT keyword option, as shown for the p_loc
+parameter
+68
+Using the DEFAULT Option for Parameters
+• On the following slide, three ways of invoking the add_dept
+procedure are displayed:
+• The first example uses the default values for each parameter.
+• The second example illustrates a combination of position and
+named notation to assign values. In this case, using named
+notation is presented as an example.
+• The last example uses the default value for the name parameter
+and the supplied value for the p_loc parameter.
+69
+Using the DEFAULT Option for Parameters
+• Referring to the code on Slide #67, we know the
+add_dept procedure has two IN parameters and
+both parameters have default values.
+add_dept;
+add_dept ('ADVERTISING', p_loc => 1400);
+add_dept (p_loc => 1400);
+70
+Guidelines for Using the DEFAULT Option
+for Parameters
+71
+• You cannot assign default values to OUT and IN OUT
+parameters in the header, but you can in the body of the
+procedure.
+• Usually, you can use named notation to override the default
+values of formal parameters.
+• However, you cannot skip providing an actual parameter if
+there is no default value provided for a formal parameter.
+• A parameter inheriting a DEFAULT value is different from
+NULL.
+Working with Parameter Errors During Runtime
+• Note: All the positional parameters should precede
+the named parameters in a subprogram call.
+• Otherwise, you receive an error message, as shown in
+the following example:
+• The following error message is generated:
+BEGIN
+add_dept(name =>'new dept', 'new location'); END;
+ORA-06550: line 2, column 3:
+PLS-00306: a positional parameter association may not follow a named association
+ORA-06550: line 2, column 3:
+PL/SQL: Statement ignored
+72
+1.
+2.
+3.
+BEGIN
+add_dept(name=>'new dept', 'new location');
+END;
+Reference
+PL/SQL User's Guide and Reference, Release 9.0.1
+Part No. A89856-01
+Copyright © 1996, 2001, Oracle Corporation. All rights
+reserved.
+Primary Authors: Tom Portfolio, John Russell
+Oracle Academy
+PLSQL S8L2 Using Parameters in Procedures
+PLSQL S8L3 Passing Parameters
+Copyright © 2019, Oracle and/or its affiliates. All rights reserved.
+
+Module 5
+
+
+
+
+INTENDED LEARNING OUTCOME
+• Differentiate between a procedure and a function.
+• Describe the uses of functions.
+• Create stored functions.
+• Invoke a function.
+• Remove a function.
+• A function is a named PL/SQL block (subprogram) that can
+accept optional IN parameters and must return exactly
+one value.
+• Functions must be called as part of a SQL or PL/SQL
+expression.
+• In SQL expressions, a function must obey specific rules to
+control side effects.
+• Avoid the following within functions:
+– Any kind of DML or DDL
+– COMMIT or ROLLBACK
+– Altering global variables
+5
+What Is a Stored Function?
+• Certain return types (Boolean, for example) prevent a
+function from being called as part of a SELECT.
+• In PL/SQL expressions, the function identifier acts like a
+variable whose value depends on the parameters passed
+to it.
+• A function must have a RETURN clause in the header and
+at least one RETURN statement in the executable section.
+What Is a Stored Function?
+6
+The header for a function is like a PROCEDURE header with
+two differences:
+• The parameter mode should only be IN.
+• The RETURN clause is used instead of OUT mode.
+Syntax for Creating Functions
+CREATE [OR REPLACE] FUNCTION function_name
+[(parameter1 [mode1] datatype1, ...)]
+RETURN datatype IS|AS
+[local_variable_declarations; …]
+BEGIN
+-- actions;
+RETURN expression;
+END [function_name];
+7
+• A function must return a single value.
+• You must provide a RETURN statement to return a value
+with a data type that is consistent with the function
+declaration type.
+• You create new functions using the CREATE [OR
+REPLACE] FUNCTION statement which can declare a
+list of parameters, must return exactly one value, and must
+define the actions to be performed by the PL/SQL block.
+Syntax for Creating Functions
+8
+• Create the function:
+• Invoke the function as an expression or as a parameter value:
+Stored Function With a Parameter: Example
+CREATE OR REPLACE FUNCTION get_sal
+(p_id IN employees.employee_id%TYPE)
+RETURN NUMBER IS
+v_sal employees.salary%TYPE := 0;
+BEGIN
+SELECT salary
+INTO v_sal
+FROM employees
+WHERE employee_id = p_id;
+RETURN v_sal;
+END get_sal;
+... v_salary := get_sal(100);
+9
+• You can use RETURN from the executable section and/or from
+the EXCEPTION section.
+• Create the function:
+• Invoke the function as an expression with a bad parameter:
+Using RETURN
+CREATE OR REPLACE FUNCTION get_sal
+(p_id IN employees.employee_id%TYPE) RETURN NUMBER IS
+v_sal employees.salary%TYPE := 0;
+BEGIN
+SELECT salary INTO v_sal
+FROM employees WHERE employee_id = p_id;
+RETURN v_sal;
+EXCEPTION
+WHEN NO_DATA_FOUND THEN RETURN NULL;
+END get_sal;
+10
+... v_salary := get_sal(999);
+Ways to Invoke (or Execute) Functions With
+Parameters
+11
+Functions can be invoked in the following ways:
+• As part of PL/SQL expressions – use a local variable in an
+anonymous block to hold the returned value from a
+function.
+• As a parameter to another subprogram – pass functions
+between subprograms.
+• As an expression in a SQL statement – invoke a function as
+any other single-row function in a SQL statement.
+Invoking a Function as Part of a
+PL/SQL Expression
+• When invoking a function as part of a PL/SQL expression,
+you can use a local variable to store the returned result.
+• In this example, v_sal is the local variable in an
+anonymous block that stores the results returned from the
+get_sal function.
+DECLARE v_sal employees.salary%type;
+BEGIN
+v_sal := get_sal(100); ...
+END;
+12
+Invoking a Function as a Parameterin
+Another Subprogram
+• You can also invoke a function as a parameter to another
+subprogram.
+• In this example, the get_sal function with all its
+arguments is nested in the parameter required by the
+DBMS_OUTPUT.PUT_LINE procedure.
+...DBMS_OUTPUT.PUT_LINE(get_sal(100));
+13
+Invoking a Function as an Expression in a
+SQL Statement
+• You can also invoke a function as an expression in a SQL
+statement.
+• The following example shows how you can use a function
+as a single-row function in a SQL statement.
+• Note: The restrictions that apply to functions when used in
+a SQL statement are discussed in the next lesson.
+• If functions are designed thoughtfully, they can be
+powerful constructs.
+SELECT job_id, get_sal(employee_id) FROM employees;
+14
+Invoking Functions Without Parameters
+• Most functions have parameters, but not all.
+• For example, the system functions USER and SYSDATE
+have no parameters.
+• Invoke as part of a PL/SQL expression, using a local
+variable to obtain the result
+DECLARE v_today DATE;
+BEGIN
+v_today := SYSDATE; ...
+END;
+15
+Invoking Functions Without Parameters
+• Use as a parameter to anothersubprogram
+• Use in a SQL statement (subject to restrictions)
+...DBMS_OUTPUT.PUT_LINE(USER);
+SELECT job_id, SYSDATE-hire_date FROM employees;
+16
+Benefits and Restrictions That Apply to Functions
+17
+Benefits Restrictions
+Try things quickly: Functions
+allow you to temporarily display
+a value in a new format: a
+different case, annually vs.
+monthly (times 12),
+concatenated, or with
+substrings.
+PL/SQL types do not completely
+overlap with SQL types. What is fine
+for PL/SQL (for example, BOOLEAN,
+RECORD) might be invalid for a
+SELECT.
+Extend functionality: Add new
+features, such as spell checking
+and parsing.
+PL/SQL sizes are not the same as
+SQL sizes. For instance, a PL/SQL
+VARCHAR2 variable can be up to 32
+KB, whereas a SQL VARCHAR2
+column can be only up to 4 KB.
+Syntax Differences Between Procedures and
+Functions
+• Procedures
+• Functions
+CREATE [OR REPLACE] PROCEDURE name [parameters] IS|AS (Mandatory)
+Variables, cursors, etc. (Optional)
+BEGIN (Mandatory)
+SQL and PL/SQL statements;
+EXCEPTION (Optional)
+WHEN exception-handling actions;
+END [name]; (Mandatory)
+CREATE [OR REPLACE] FUNCTION name [parameters] (Mandatory)
+RETURN datatype IS|AS (Mandatory)
+Variables, cursors, etc. (Optional)
+BEGIN (Mandatory)
+SQL and PL/SQL statements;
+RETURN ...; (One Mandatory, more optional)
+EXCEPTION (Optional)
+WHEN exception-handling actions;
+END [name]; (Mandatory)
+18
+Differences/Similarities
+Between Procedures and Functions
+19
+• Both can have zero or more IN parameters that can be
+passed from the calling environment.
+• Both have the standard block structure including exception
+handling.
+Procedures Functions
+Execute as a PL/SQL statement Invoked as part of an expression
+Do not contain RETURN clause in
+the header
+Must contain a RETURN clause in the
+header
+May return values (if any) in output
+parameters (not required) Must return a single value
+May contain a RETURN statement
+without a value
+Must contain at least one RETURN
+statement
+Differences Between
+Procedures and Functions
+20
+Procedures
+• You create a procedure to store a series of actions for later
+execution.
+• A procedure does not have to return a value.
+• A procedure can call a function to assist with its actions.
+• Note: A procedure containing a single OUT parameter
+might be better rewritten as a function returning the
+value.
+Differences Between
+Procedures and Functions
+21
+Functions
+• You create a function when you want to compute a value
+that must be returned to the calling environment.
+• Functions return only a single value, and the value is
+returned through a RETURN statement.
+• The functions used in SQL statements cannot use OUT or
+IN OUT modes.
+• Although a function using OUT can be invoked from a
+PL/SQL procedure or anonymous block, it cannot be used
+in SQL statements.
+Reference
+PL/SQL User's Guide and Reference, Release 9.0.1
+Part No. A89856-01
+Copyright © 1996, 2001, Oracle Corporation. All rights
+reserved.
+Primary Authors: Tom Portfolio, John Russell
+Oracle Academy
+PLSQL S9L1 Creating Functions
+Copyright © 2019, Oracle and/or its affiliates. All rights reserved.
+
+Module 6
+
+
+
+
+INTENDED LEARNING OUTCOME
+• Describe packages and list their components.
+• Create a package to group together related variables, cursors,
+constants, exceptions, procedures, and functions.
+• Designate a package construct as either public or private.
+• Invoke a package construct.
+What Are PL/SQL Packages?
+5
+• PL/SQL packages are containers that enable you to group
+together related PL/SQL subprograms, variables, cursors,
+and exceptions.
+• For example, a Human Resources package can contain
+hiring and firing procedures, commission and bonus
+functions, and tax-exemption variables.
+A package consists of two parts stored separately
+in the database:
+• Package specification: The interface to your
+applications.
+– It must be created first.
+– It declares the constructs (procedures, functions,
+variables, and so on) that are visible to the calling
+environment.
+• Package body: This contains the executable
+code of the subprograms that were declared in
+the package specification.
+– It can also contain its own variable declarations.
+Components of a PL/SQL Package
+Package
+specification
+6
+Package
+body
+• The detailed package body code is invisible to
+the calling environment, which can see only the
+specification.
+• If changes to the code are needed, the body
+can be edited and recompiled without having
+to edit or recompile the specification.
+• This two-part structure is an example of a
+modular programming principle called
+encapsulation.
+Components of a PL/SQL Package
+Package
+specification
+7
+Package
+body
+Components of a PL/SQL Package
+Procedure A declaration;
+Variable_1
+Procedure B definition…
+Variable_3
+Variable_2
+Package
+specification
+8
+Package
+body
+• To create packages, you declare all public constructs
+within the package specification.
+• The OR REPLACE option drops and
+re-creates the package specification.
+Syntax for Creating the Package Specification
+CREATE [OR REPLACE] PACKAGE package_name
+IS|AS
+public type and variable declarations
+public subprogram specifications
+END [package_name];
+9
+• package_name: Specifies a name for the package that
+must be unique among objects within the owning
+schema.
+• Including the package name after the END keyword is
+optional.
+Syntax for Creating the Package Specification
+CREATE [OR REPLACE] PACKAGE package_name
+IS|AS
+public type and variable declarations
+public subprogram specifications
+END [package_name];
+10
+• public type and variable declarations:
+Declares public variables, constants, cursors, exceptions,
+user-defined types, and subtypes.
+• Variables declared in the package specification are initialized to
+NULL by default.
+• public subprogram specifications: Declaresthe
+public procedures and/or functions in the package.
+Syntax for Creating the Package Specification
+CREATE [OR REPLACE] PACKAGE package_name
+IS|AS
+public type and variable declarations
+public subprogram specifications
+END [package_name];
+11
+• “Public” means that the package construct (variable,
+procedure, function, and so on) can be seen and executed
+from outside the package.
+• All constructs declared in the package specification are
+automatically public constructs.
+• For all public procedures and functions, the package
+specification should contain the subprogram name and
+associated parameters terminated by a semicolon (not the
+actual code of the subprogram).
+12
+Creating the Package Specification
+• The implementation (i.e., the detailed code) of a
+procedure or function that is declared in a package
+specification is done in the package body.
+• The next two slides show code examples.
+Creating the Package Specification
+13
+• G_MAX_LENGTH_OF_SERVICE is a constant declared
+and initialized in the specification.
+• CHK_HIREDATE and CHK_DEPT_MGR are two public
+procedures declared in the specification.
+• Their detailed code is written in the package body.
+Example of Package Specification:
+check_emp_pkg
+CREATE OR REPLACE PACKAGE check_emp_pkg
+IS
+g_max_length_of_service CONSTANT NUMBER := 100;
+PROCEDURE chk_hiredate
+(p_date IN employees.hire_date%TYPE);
+PROCEDURE chk_dept_mgr
+(p_empid IN employees.employee_id%TYPE,
+p_mgr IN employees.manager_id%TYPE);
+END check_emp_pkg;
+14
+Remember that a cursor is a type of variable.
+Package Specification: A Second Example
+CREATE OR REPLACE PACKAGE manage_jobs_pkg
+IS
+15
+g_todays_date
+CURSOR jobs_curs
+DATE := SYSDATE;
+IS
+SELECT employee_id, job_id FROM employees
+ORDER BY employee_id;
+PROCEDURE update_job
+(p_emp_id IN employees.employee_id%TYPE);
+PROCEDURE fetch_emps
+(p_job_id
+p_emp_id
+IN employees.job_id%TYPE,
+OUT employees.employee_id%TYPE);
+END manage_jobs_pkg;
+• Create a package body to contain the detailed code for all
+the subprograms declared in the specification.
+• package_name specifies a name for the package body
+that must be the same as its package specification.
+• Using the package name after the END keyword is
+optional.
+Syntax for Creating the Package Body
+CREATE [OR REPLACE] PACKAGE BODY package_name IS|AS
+private type and variable declarations
+subprogram bodies
+[BEGIN initialization statements]
+END [package_name];
+16
+• Private types and variables, and BEGIN initialization
+statements, are discussed in later lessons.
+• subprogram bodies must contain the code of all the
+subprograms declared in the package specification (i.e.,
+the public subprograms) and the code for all private
+subprograms.
+Syntax for Creating the Package Body
+CREATE [OR REPLACE] PACKAGE BODY package_name IS|AS
+private type and variable declarations
+subprogram bodies
+[BEGIN initialization statements]
+END [package_name];
+17
+When creating a package body, do the following:
+• Specify the OR REPLACE option to overwrite an existing
+package body.
+• Define the subprograms in an appropriate order.
+• The basic principle is that you must declare a variable or
+subprogram before it can be referenced by other
+components in the same package body.
+• Every subprogram declared in the package specification
+must also be included in the package body.
+18
+Creating the Package Body
+Example of Package Body:
+check_emp_pkg
+CREATE OR REPLACE PACKAGE BODY check_emp_pkg IS
+PROCEDURE chk_hiredate
+(p_date IN
+employees.hire_date%TYPE) IS
+BEGIN
+IF MONTHS_BETWEEN(SYSDATE, p_date) >
+g_max_length_of_service * 12 THEN
+RAISE_APPLICATION_ERROR(-20200, 'Invalid Hiredate');
+END IF;
+END chk_hiredate;
+PROCEDURE chk_dept_mgr
+(p_empid IN employees.employee_id%TYPE,
+p_mgr IN employees.manager_id%TYPE)
+IS BEGIN ...
+END chk_dept_mgr;
+END check_emp_pkg;
+19
+• Suppose now you want to make a change to the
+CHK_HIREDATE procedure, for example, to raise a
+different error message.
+• You must edit and recompile the package body, but you do
+not need to recompile the specification.
+• Remember, the specification can exist without the body
+(but the body cannot exist without the specification).
+• Because the specification is not recompiled, you do not
+need to recompile any applications (or other PL/SQL
+subprograms) that are already invoking the package
+procedures.
+20
+Changing the Package Body Code
+Recompiling the Package Body:
+check_emp_pkg
+CREATE OR REPLACE PACKAGE BODY check_emp_pkg IS
+PROCEDURE chk_hiredate
+(p_date IN employees.hire_date%TYPE)
+IS BEGIN
+IF MONTHS_BETWEEN(SYSDATE, p_date) >
+g_max_length_of_service * 12 THEN
+RAISE_APPLICATION_ERROR(-20201, 'Hiredate Too Old');
+END IF;
+END chk_hiredate;
+PROCEDURE chk_dept_mgr
+(p_empid IN employees.employee_id%TYPE,
+p_mgr IN employees.manager_id%TYPE)
+IS BEGIN ...
+END chk_dept_mgr;
+END check_emp_pkg;
+21
+After the package is stored in the database, you can invoke
+subprograms stored within the same package or stored in
+another package.
+Invoking Package Subprograms
+Within the
+same
+package
+Specify the subprogram name
+Subprogram;
+You can fully qualify a subprogram within the
+same package, but this is optional.
+package_name.subprogram;
+External to
+the package
+Fully qualify the (public) subprogram with its
+package name
+package_name.subprogram;
+• To remove the entire package, specification and body, use
+the following syntax:
+• To remove only the package body, use the following
+syntax:
+• You cannot remove the package specification
+on its own.
+Removing Packages
+DROP PACKAGE package_name;
+DROP PACKAGE BODY package_name;
+• You can DESCRIBE a package in the same way as you can
+DESCRIBE a table or view:
+• You cannot DESCRIBE individual packaged subprograms,
+only the whole package.
+Describing a Package
+DESCRIBE check_emp_pkg
+24
+Object Type PACKAGE Object CHECK_EMP_PKG
+Package Name Procedure Argument In Out Datatype
+CHECK_EMP_PKG CHK_DEPT_MGR P_EMPID IN NUMBER
+P_MGR IN NUMBER
+CHK_HIREDATE P_DATE IN DATE
+• Modularity: Related programs and variables can be
+grouped together.
+• Hiding information: Only the declarations in the package
+specification are visible to invokers.
+• Application developers do not need to know the details of
+the package body code.
+• Easier maintenance: You can change and recompile the
+package body code without having to recompile the
+specification.
+• Therefore, applications that already use the package do
+not need to be recompiled.
+25
+Reasons for Using Packages
+Reference
+PL/SQL User's Guide and Reference, Release 9.0.1
+Part No. A89856-01
+Copyright © 1996, 2001, Oracle Corporation. All rights
+reserved.
+Primary Authors: Tom Portfolio, John Russell
+Oracle Academy
+PLSQL S10L1 Creating Functions
+Copyright © 2019, Oracle and/or its affiliates. All rights reserved.
+
+Module 7
+
+
+
+
+INTENDED LEARNING OUTCOME
+• Describe database triggers and their uses.
+• Describe the different types of triggers.
+• View trigger information in the Data Dictionary
+• Disable and enable a database trigger
+• Remove a trigger from the database
+4
+
+Need For A Trigger
+• Let’s start with an example: A business rule states that
+whenever an employee’s salary is changed, the change
+must be recorded in a logging table.
+• You could create two procedures to do this:
+UPD_EMP_SAL to update the salary, and
+LOG_SAL_CHANGE to insert the row into the logging
+table.
+• You could invoke LOG_SAL_CHANGE from within
+UPD_EMP_SAL, or invoke LOG_SAL_CHANGE
+separately from the calling environment.
+6
+Need For A Trigger
+• But you do not have to do this.
+• Instead, you create a trigger.
+• The next slide shows how.
+7
+Example of a Simple Trigger
+• From now on, whenever an SQL statement updates a salary,
+this trigger executes automatically, inserting the row into the
+logging table.
+• This means the trigger automatically fires (that is, executes)
+whenever the triggering event (updating a salary) occurs.
+• Cause and effect: The event occurs, and the trigger fires.
+CREATE OR REPLACE TRIGGER log_sal_change_trigg AFTER UPDATE
+OF salary ON employees
+BEGIN
+INSERT INTO log_table (user_id, logon_date) VALUES (USER,
+SYSDATE);
+END;
+8
+What Is a Trigger?
+• A database trigger:
+• Is a PL/SQL block associated with a specific action (an event)
+such as a successful logon by a user, or an action taken on a
+database object such as a table or view
+• Executes automatically whenever the
+associated action occurs
+• Is stored in the database
+• In the example on the previous slide, the
+trigger is associated with this action: UPDATE
+OF salary ON employees
+association
+PL/SQL Block
+Table, View, etc.
+9
+What Is a Trigger?
+• Triggers allow specified actions to be performed automatically in
+the database without having to write any extra front-end
+application code.
+• The key difference between procedures/functions and triggers is
+that procedures/functions have to be invoked explicitly
+• Triggers are blocks of code that are always "listening" for
+something to happen in the database.
+• Also, since triggers are never explicitly invoked, they cannot
+receive parameters.
+10
+Database Triggers Compared to Application Triggers
+• Database triggers execute automatically whenever a data
+event (such as DML or DDL) or a system event (such as a
+user connecting or the DBA shutting down the database)
+occurs on a schema or database.
+• Database triggers are created and stored in the database just
+like PL/SQL procedures, functions, and packages.
+• Application triggers execute whenever a particular event
+occurs within an application.
+• They may lead to a database event, but they are not part of
+the database.
+11
+Which Events Can Cause a Database Trigger to Fire?
+The following events in the database can cause a trigger to fire:
+•DML operations on a table
+•DML operations on a view, with an INSTEAD OF trigger
+•DDL statements, such as CREATE and ALTER
+•Database system events, such as when a user logs on or the DBA
+shuts down the database
+12
+Types of Triggers
+Triggers can be either row-level or statement-level.
+• A row-level trigger fires once for each row affected by the
+triggering statement
+• A statement-level trigger fires once for the whole statement.
+13
+Possible Uses for Triggers
+You can use triggers to:
+•Enhance complex database security rules
+•Create auditing records automatically
+•Enforce complex data integrity rules
+•Create logging records automatically
+•Prevent tables from being accidentally dropped
+•Prevent invalid DML transactions from occurring
+14
+Example 1: Creating Logging Records Automatically
+• The Database Administrator wants to keep an automatic record
+(in a database table) of who logs onto the database, and when.
+• He/she could create the log table and a suitable trigger as
+follows:
+CREATE TABLE log_table ( user_id VARCHAR2(30), logon_date
+DATE);
+CREATE OR REPLACE TRIGGER logon_trigg AFTER LOGON ON DATABASE
+BEGIN
+INSERT INTO log_table (user_id, logon_date) VALUES (USER,
+SYSDATE);
+END;
+15
+Example 2: Enforcing Complex Data Integrity Rules
+• Imagine a business rule that states no employee’s job can be
+changed to a job that the employee has already done in the
+past.
+CREATE OR REPLACE TRIGGER check_sal_trigg BEFORE UPDATE OF job_id ON
+employees
+FOR EACH ROW DECLARE
+v_job_count INTEGER; BEGIN
+SELECT COUNT(*) INTO v_job_count FROM job_history
+WHERE employee_id = :OLD.employee_id AND job_id = :NEW.job_id;
+IF v_job_count > 0 THEN RAISE_APPLICATION_ERROR
+(-20201,'This employee has already done this job'); END IF;
+END;
+16
+Guidelines for Triggers
+• Do not define triggers to duplicate or replace actions you can do
+easily in other ways.
+• For example, implement simple data integrity rules using
+constraints, not triggers.
+• Excessive use of triggers can result in slower processing and
+complex interdependencies, which can be difficult to maintain.
+• Use triggers only when necessary and be aware of recursive
+(trigger that calls itself) and cascading effects.
+• Avoid lengthy trigger logic by creating stored procedures or
+packaged procedures that are invoked in the trigger body.
+17
+Comparison of Database Triggers and
+Stored Procedures
+Triggers Procedures
+Defined with CREATE
+TRIGGER
+Defined with CREATE PROCEDURE
+Data Dictionary contains
+source code in
+USER_TRIGGERS
+Data Dictionary contains source
+code in USER_SOURCE
+Implicitly invoked Explicitly invoked
+COMMIT, SAVEPOINT, and
+ROLLBACK are not allowed
+COMMIT, SAVEPOINT, and
+ROLLBACK are allowed
+18
+
+Privileges Needed for Triggers
+• To create a trigger in your own schema, you need:
+– CREATE TRIGGER system privilege
+– Normal object privileges (SELECT, UPDATE, EXECUTE, and so
+on) on objects in other schemas that are referenced in your
+trigger body
+– ALTER privilege on the table or view associated with the
+trigger.
+• To create triggers in other users' schemas, you need the
+CREATE ANY TRIGGER privilege.
+20
+Privileges Needed for Triggers
+• Statements in the trigger body use the privileges of
+the trigger owner (Definer's Rights), NOT the privileges
+of the user executing the operation that fires the
+trigger (Invoker's Rights).
+• You cannot specify Invoker’s Rights (AUTHID
+CURRENT_USER) for a trigger.
+• The next slide shows an example.
+21
+Privileges Needed for Triggers Example
+• User Monica needs to create the following trigger:
+• Monica needs the following privileges:
+– CREATE TRIGGER
+– UPDATE on TOM.EMPLOYEES
+– INSERT on MARY.LOG_TABLE
+– EXECUTE on SHARON.CALLEDPROC.
+CREATE OR REPLACE TRIGGER upd_tom_emp AFTER UPDATE ON tom.employees
+BEGIN
+INSERT INTO mary.log_table VALUES(USER, SYSDATE);
+sharon.calledproc; END;
+22
+Viewing Triggers in the Data Dictionary
+You can see trigger information in the following Data Dictionary
+views:
+•USER_OBJECTS: Object name and object type (as for all other
+object types in your schema)
+•USER_TRIGGERS: Detailed code and status of the trigger
+•USER_ERRORS: PL/SQL syntax errors (compilation errors) of the
+trigger
+•Source code for triggers is in USER_TRIGGERS not USER_SOURCE.
+23
+USER_TRIGGERS Data Dictionary
+• * Not all columns are shown here
+Column* Column Description
+TRIGGER_NAME Name of the trigger
+TRIGGER_TYPE When it fires - BEFORE, AFTER, ROW, etc.
+TRIGGERING_EVENT The DML operation firing the trigger
+TABLE_NAME Name of the associated table
+REFERENCING_NAMES Name used for :OLD and :NEW
+WHEN_CLAUSE The when_clause used
+STATUS The status of the trigger
+TRIGGER_BODY Action taken by the trigger
+24
+Viewing Trigger Information Using USER_TRIGGERS
+• This example shows the triggering event, timing, type of trigger,
+status, and detailed body code of the RESTRICT_SALARY trigger:
+SELECT trigger_name, trigger_type, triggering_event, table_name, status,
+trigger_body
+FROM USER_TRIGGERS
+WHERE trigger_name = 'RESTRICT_SALARY';
+TRIGGER_NAME TRIGGER_TYPE TRIGGERING_EVENT TABLE_NAME STATUS TRIGGER_BODY
+RESTRICT_SALARY BEFORE EACH INSERT OR UPDATE EMPLOYEES
+ROW
+ENABLED BEGIN IF NOT (:NEW job_id IN
+(‘AD_PRES’, ‘AD_VP’))
+AND :NEW.salary > 15000 THEN
+RAISE_APPLICATION_ERROR
+(-20202, ‘Employee cannot earn more than
+$15,000’); END IF; END;
+25
+Changing the Status of Triggers
+• If you need a trigger turned off temporarily, don't drop it and
+then recreate it, just disable it for a little while by using the
+ALTER TRIGGER statement.
+• Disable or re-enable a database trigger:
+• Disable or re-enable all triggers for a table:
+• When a trigger is first created, it is enabled by default.
+ALTER TRIGGER trigger_name DISABLE | ENABLE;
+ALTER TABLE table_name DISABLE | ENABLE ALL TRIGGERS;
+• Recompile a trigger for a table:
+ALTER TRIGGER trigger_name COMPILE;
+26
+Changing the Status of Triggers
+Why would we disable a trigger? Answer:
+1. To improve performance when loading very large amounts of data
+into the database.
+For example, imagine a trigger defined as
+…AFTER INSERT
+ON bigtable FOR EACH ROW….
+Now someone (maybe the DBA) inserts 10 million rows into BIGTABLE.
+This row trigger will fire 10 million times, slowing down the data load
+considerably.
+2. We may disable a trigger when it references a database object that
+is currently unavailable due to a failed network connection, disk crash,
+offline data file, or offline table space.
+27
+Removing Triggers
+• To remove a trigger from the database, use the DROP
+TRIGGER statement:
+• Example:
+• Note: All triggers on a table are removed when the table is
+removed.
+DROP TRIGGER trigger_name;
+DROP TRIGGER secure_emp;
+28
+Reference
+PL/SQL User's Guide and Reference, Release 9.0.1
+Part No. A89856-01
+Copyright © 1996, 2001, Oracle Corporation. All rights
+reserved.
+Primary Authors: Tom Portfolio, John Russell
+Oracle Academy
+PLSQL S13L1 Introduction to Triggers
+PLSQL S13L5 Managing Triggers
+Copyright © 2019, Oracle and/or its affiliates. All rights reserved.
+29
+
+
+
+INTENDED LEARNING OUTCOME
+• Create a DML trigger
+• List the DML trigger components
+33
+
+What Is a DML Trigger?
+• A DML trigger is a trigger that is automatically fired (executed) whenever an
+SQL DML statement (INSERT, UPDATE, or DELETE) is executed.
+• You classify DML triggers in two ways:
+– By when they execute: BEFORE, AFTER, or INSTEAD OF the triggering DML
+statement.
+– By how many times they execute: Once for the whole DML statement (a
+statement trigger), or once for each row affected by the DML statement
+(a row trigger).
+35
+Creating DML Statement Triggers
+• The sections of a CREATE TRIGGER statement that need to be considered
+before creating a trigger:
+• timing: When the trigger fires in relation to the triggering event.
+– Values are BEFORE, AFTER, or INSTEAD OF.
+• event: Which DML operation causes the trigger to fire. Values are INSERT,
+UPDATE [OF column], and DELETE.
+CREATE [OR REPLACE] TRIGGER trigger_name timing
+event1 [OR event2 OR event3] ON object_name
+trigger_body
+36
+Creating DML Statement Triggers
+• object_name: The table or view associated with the trigger.
+• trigger_body: The action(s) performed by the trigger are defined
+in an anonymous block.
+CREATE [OR REPLACE] TRIGGER trigger_name timing
+event1 [OR event2 OR event3] ON object_name trigger_body
+37
+Statement Trigger Timing
+When should the trigger fire?
+•BEFORE: Execute the trigger body before the triggering DML
+event on a table.
+•AFTER: Execute the trigger body after the triggering DML event
+on a table.
+•INSTEAD OF: Execute the trigger body instead of the triggering
+DML event on a view.
+•Programming requirements will dictate which one will be used.
+38
+Trigger Timings and Events Examples
+• The first trigger executes immediately before an
+employee’s salary is updated:
+• The second trigger executes immediately after an
+employee is deleted:
+CREATE OR REPLACE TRIGGER sal_upd_trigg BEFORE UPDATE OF
+salary ON employees BEGIN ... END;
+CREATE OR REPLACE TRIGGER emp_del_trigg AFTER DELETE ON
+employees
+BEGIN ... END;
+39
+Trigger Timings and Events Examples
+• You can restrict an UPDATE trigger to updates of a
+specific column or columns:
+• A trigger can have more than one triggering event:
+CREATE OR REPLACE TRIGGER sal_upd_trigg
+BEFORE UPDATE OF salary, commission_pct ON employees BEGIN
+... END;
+CREATE OR REPLACE TRIGGER emp_del_trigg
+AFTER INSERT OR DELETE OR UPDATE ON employees BEGIN ... END;
+10 40
+How Often Does a Statement Trigger Fire?
+A statement trigger:
+•Fires only once for each execution of the triggering
+statement (even if no rows are affected)
+•Is the default type of DML trigger
+•Fires once even if no rows are affected
+•Useful if the trigger body does not need to process column
+values from affected rows
+CREATE OR REPLACE TRIGGER log_emp_changes AFTER
+UPDATE ON employees BEGIN
+INSERT INTO log_emp_table (who, when) VALUES
+(USER, SYSDATE);
+END;
+41
+How Often Does a Statement Trigger Fire?
+• Now an UPDATE statement is executed:
+• How many times does the trigger fire, if the UPDATE
+statement modifies three rows?
+• Ten rows?
+• One row?
+• No rows?
+UPDATE employees SET ... WHERE
+...;
+42
+And When Does the Statement Trigger Fire?
+• This slide shows the firing sequence for a statement trigger
+associated with the event INSERT INTO departments:
+INSERT INTO departments (department_id,department_name,
+location_id)
+VALUES (400, 'CONSULTING', 2500);
+BEFORE statement
+trigger
+AFTER statement
+trigger
+Triggering action
+43
+Trigger-Firing Sequence
+• A statement trigger fires only once even if the triggering DML
+statement affects many rows:
+UPDATE employees
+SET salary = salary * 1.1 WHERE department_id = 50;
+BEFORE statement
+trigger
+AFTER statement
+trigger
+44
+DML Statement Triggers Example 1
+• This statement trigger automatically inserts a row into a logging
+table every time one or more rows are successfully inserted into
+EMPLOYEES.
+Application
+INSERT INTO EMPLOYEES...;
+EMPLOYEES table
+LOG_EMP trigger
+CREATE OR REPLACE TRIGGER
+AFTER INSERT ON employees
+log_emp
+BEGIN
+INSERT INTO log_emp_table (who, when)
+VALUES (USER, SYSDATE);
+END;
+45
+DML Statement Triggers Example 2
+• This statement trigger automatically inserts a row into a logging
+table every time a DML operation is successfully executed on
+the DEPARTMENTS table.
+CREATE OR REPLACE TRIGGER log_dept_changes AFTER INSERT OR
+UPDATE OR DELETE ON DEPARTMENTS BEGIN
+INSERT INTO log_dept_table (which_user, when_done) VALUES
+(USER, SYSDATE);
+END;
+46
+DML Statement Triggers Example 3
+• This example shows how you can use a DML trigger to enforce
+complex business rules that cannot be enforced by a constraint.
+• You want to allow INSERTs into the EMPLOYEES table during
+normal working days (Monday through Friday), but prevent
+INSERTs on the weekend (Saturday and Sunday).
+47
+DML Statement Triggers Example
+• If a user attempts to insert a row into the EMPLOYEES table
+during the weekend, then the user sees an error message, the
+trigger fails, and the triggering statement is rolled back.
+• The next slide shows the trigger code needed for this example.
+48
+DML Statement Triggers: Example 3
+Application
+INSERT INTO EMPLOYEES...;
+EMPLOYEES table
+SECURE_EMP trigger
+CREATE OR REPLACE TRIGGER secure_emp BEFORE INSERT ON
+employees
+BEGIN
+IF TO_CHAR(SYSDATE,'DY') IN ('SAT','SUN') THEN
+RAISE_APPLICATION_ERROR(-20500,
+'You may insert into EMPLOYEES table only during
+business hours');
+END IF; END;
+49
+Testing SECURE_EMP
+• A user tries to INSERT a row on the weekend:
+INSERT INTO employees (employee_id, last_name, first_name, email,
+hire_date, job_id, salary, department_id)
+VALUES (300, 'Smith', 'Rob', 'RSMITH', SYSDATE,'IT_PROG', 4500,
+60);
+ORA-20500: You may insert into EMPLOYEES table only during
+business hours.
+ORA-06512: at “USVA_TEST_SQL01_T01.SECURE_EMP”, line 4
+ORA_04088: error during execution of trigger
+‘USVA_TEST_SQL01_T01.SECURE_EMP’ 2. VALUES (300,
+‘Smith’, ‘Rob’, ‘RSMITH’, SYSDATE, ‘IT_PROG’, 4500, 60);
+20 50
+A Final Example
+• This trigger does not compile successfully.
+• Why not?
+CREATE OR REPLACE TRIGGER log_dept_changes AFTER INSERT OR
+UPDATE OR DELETE ON DEPARTMENTS BEGIN
+INSERT INTO log_dept_table (which_user, when_done) VALUES
+(USER, SYSDATE);
+COMMIT; END;
+51
+
+Using Conditional Predicates
+• In the previous lesson, you saw a trigger that prevents
+INSERTs into the EMPLOYEES table during the
+weekend:
+CREATE OR REPLACE TRIGGER secure_emp BEFORE INSERT ON
+employees
+BEGIN
+IF TO_CHAR(SYSDATE, 'DY') IN ('SAT', 'SUN') THEN
+RAISE_APPLICATION_ERROR(-20500,
+'You may insert into EMPLOYEES table only during
+business hours');
+END IF; END;
+53
+Using Conditional Predicates
+• Suppose you want to prevent any DML operation on
+EMPLOYEES during the weekend, but with different error
+messages for INSERT, UPDATE, and DELETE.
+• You could create three separate triggers; however, the next
+slide shows how to do this with a single trigger.
+CREATE OR REPLACE TRIGGER secure_emp BEFORE INSERT ON
+employees
+BEGIN
+IF TO_CHAR(SYSDATE, 'DY') IN ('SAT', 'SUN') THEN
+RAISE_APPLICATION_ERROR(-20500,
+'You may insert into EMPLOYEES table only during
+business hours');
+END IF; END;
+54
+Using Conditional Predicates
+• The trigger keywords DELETING, INSERTING, and
+UPDATING are automatically declared Boolean variables
+which are set to TRUE or FALSE by the Oracle server.
+CREATE OR REPLACE TRIGGER secure_emp
+BEFORE INSERT OR UPDATE OR DELETE ON employees
+BEGIN
+IF TO_CHAR(SYSDATE, 'DY') IN ('SAT', 'SUN') THEN
+IF DELETING THEN RAISE_APPLICATION_ERROR
+(-20501,'You may delete from EMPLOYEES table
+only during business hours.’);
+ELSIF INSERTING THEN RAISE_APPLICATION_ERROR
+(-20502,'You may insert into EMPLOYEES table
+only during business hours.’);
+ELSIF UPDATING THEN RAISE_APPLICATION_ERROR
+(-20503,'You may update EMPLOYEES table
+only during business hours.’);
+END IF;
+END IF;
+END;
+55
+Using Conditional Predicates
+• You can use conditional predicates to test for UPDATE on
+a specific column:
+(-20502, 'You may not update JOB_ID on Sunday'); END IF;
+END IF; END;
+• This trigger will allow other columns of
+EMPLOYEES to be updated at any time.
+CREATE OR REPLACE TRIGGER secure_emp
+BEFORE UPDATE ON employees
+BEGIN
+IF UPDATING('SALARY') THEN
+IF TO_CHAR(SYSDATE, 'DY') IN ('SAT',
+THEN RAISE_APPLICATION_ERROR
+(-20501,'You may not update SALARY END
+IF;
+ELSIF UPDATING('JOB_ID') THEN
+IF TO_CHAR(SYSDATE, 'DY') = 'SUN' THEN
+RAISE_APPLICATION_ERROR
+'SUN')
+on the weekend');
+56
+Understanding Row Triggers
+• Remember that a statement trigger executes only
+once for each triggering DML statement:
+• This trigger inserts exactly one row into the log table,
+regardless of whether the triggering statement
+updates one employee, several employees, or no
+employees at all.
+CREATE OR REPLACE TRIGGER log_emps
+AFTER UPDATE OF salary ON employees BEGIN
+INSERT INTO log_emp_table (who, when) VALUES (USER, SYSDATE);
+END;
+57
+Understanding Row Triggers
+• Suppose you want to insert one row into the log table
+for each updated employee.
+• For example, if five employees were updated, you
+want to insert five rows into the log table so you have
+a record of each row that was changed.
+• For this, you need a row trigger.
+58
+Row Trigger Firing Sequence
+• A row trigger fires (executes) once for each row
+affected by the triggering DML statement, either just
+BEFORE the row is processed or just AFTER.
+• If five employees are in department 50, a row trigger
+associated with an UPDATE on the employees table
+would execute five times, storing five rows in the log
+file, because of the following DML statement:
+UPDATE employees
+SET salary = salary * 1.1 WHERE department_id = 50;
+59
+Creating a Row Trigger
+• You specify a row trigger using FOR EACH ROW.
+• With this trigger, the UPDATE statement from the previous slide
+would cause five rows to be inserted into the log table, one for
+each EMPLOYEE row updated.
+• However, all five rows in the log table would be identical, and
+they would not show which employee was updated or how
+SALARY was changed.
+CREATE OR REPLACE TRIGGER log_emps
+AFTER UPDATE OF salary ON employees FOR EACH ROW BEGIN
+INSERT INTO log_emp_table (who, when) VALUES (USER, SYSDATE);
+END;
+60
+Using :OLD and :NEW Qualifiers
+• When using a row trigger, you can reference and use
+both old and new column values in the EMPLOYEES
+row currently being updated.
+• You use :OLD.column_name to reference the preupdate value, and :NEW.column_name to reference
+the post-update value.
+61
+Using :OLD and :NEW Qualifiers
+• For example, if the UPDATE statement is changing an
+employee’s salary from $10,000 to $11,000, then
+while the trigger is executing:
+– :OLD.salary has a value of 10000
+– :NEW.salary has a value of 11000.
+– With this information, you can now insert the data you need
+into the logging table.
+• The next slide shows how.
+62
+Using :OLD and :NEW Qualifiers
+• To log the employee_id, does it matter whether
+you code :OLD.employee_id or :NEW.employee_id?
+• Is there a difference?
+CREATE OR REPLACE TRIGGER log_emps
+AFTER UPDATE OF salary ON employees FOR EACH ROW BEGIN
+INSERT INTO log_emp_table
+(who, when, which_employee, old_salary, new_salary)
+VALUES (USER, SYSDATE, :OLD.employee_id,
+:OLD.salary, :NEW.salary);
+END;
+63
+A Second Example of Row Triggers
+CREATE OR REPLACE TRIGGER audit_emp_values
+AFTER DELETE OR INSERT OR UPDATE ON employees FOR
+BEGIN
+INSERT INTO audit_emp(user_name, time_stamp, id,
+old_last_name, new_last_name, old_title, new_title,
+old_salary, new_salary)
+VALUES (USER, SYSDATE, :OLD.employee_id,
+:OLD.last_name, :NEW.last_name, :OLD.job_id,
+:NEW.job_id, :OLD.salary, :NEW.salary); END;
+EACH ROW
+64
+A Second Example: Testing the
+audit_emp_values Trigger
+INSERT INTO employees
+(employee_id, last_name, job_id, salary, ...) VALUES (999,
+'Temp emp', 'SA_REP', 1000,...);
+UPDATE employees
+SET salary = 2000, last_name = 'Smith' WHERE employee_id = 999;
+SELECT user_name, time_stamp, ...
+FROM audit_emp;
+65
+A Third Example of Row Triggers
+• Suppose you need to prevent employees who are not
+a President or Vice-President from having a salary of
+more than $15,000.
+CREATE OR REPLACE TRIGGER restrict_salary
+BEFORE INSERT OR UPDATE OF salary ON employees FOR EACH ROW BEGIN
+IF NOT (:NEW.job_id IN ('AD_PRES', 'AD_VP')) AND :NEW.salary >
+15000 THEN RAISE_APPLICATION_ERROR (-20202,
+'Employee cannot earn more than $15,000.'); END IF;
+END;
+66
+Testing the restrict_salary Trigger:
+• King is a (Vice-)President, but Davies is not.
+• This UPDATE statement produces the following error:
+• Neither EMPLOYEES row is updated, because the UPDATE
+statement must either succeed completely or not at all.
+UPDATE employees SET salary = 15500
+WHERE last_name IN ('King','Davies');
+67
+Testing the restrict_salary Trigger:
+• King’s salary update will be rolled back, because every SQL
+statement must either complete 100% successfully or not at all.
+This rule is called “statement-level consistency” and is a basic
+rule of the Oracle database.
+• The error message does not show which row(s) violated the
+check and were therefore not updated. But we could easily
+show this by modifying the trigger code to:
+… RAISE_APPLICATION_ERROR (-20202, 'Employee ' ||
+:NEW.employee_id || ' cannot earn more than $15,000.');
+68
+A Fourth Example: Implementing an
+Integrity Constraint With a Trigger
+• The EMPLOYEES table has a foreign key constraint on the
+DEPARTMENT_ID column of the DEPARTMENTS table.
+• DEPARTMENT_ID 999 does not exist, so this DML statement
+violates the constraint and the employee row is not updated:
+• You can use a trigger to create the new department
+automatically. The next slide shows how.
+UPDATE employees
+SET department_id = 999 WHERE employee_id = 124;
+69
+A Fourth Example: Creating the Trigger:
+CREATE OR REPLACE TRIGGER employee_dept_fk_trg
+BEFORE UPDATE OF department_id ON employees FOR EACH ROW
+DECLARE
+v_dept_id departments.department_id%TYPE; BEGIN
+SELECT department_id INTO v_dept_id FROM departments WHERE
+department_id = :NEW.department_id;
+EXCEPTION
+WHEN NO_DATA_FOUND THEN
+INSERT INTO departments VALUES(:NEW.department_id, 'Dept
+'||:NEW.department_id, NULL, NULL);
+END;
+•Let’s test it:
+UPDATE employees
+SET department_id = 999 WHERE employee_id = 124;
+-- Successful after trigger is fired
+70
+Using the REFERENCING Clause
+• Look again at the first example of a row trigger:
+• What if the EMPLOYEES table had a different name?
+• What if it was called OLD instead?
+• OLD is not a good name, but is possible.
+• What would our code look like now?
+CREATE OR REPLACE TRIGGER log_emps
+AFTER UPDATE OF salary ON employees FOR EACH ROW BEGIN
+INSERT INTO log_emp_table (who, when, which_employee,
+old_salary, new_salary)
+VALUES (USER, SYSDATE, :OLD.employee_id, :OLD.salary,
+:NEW.salary); END;
+71
+Using the REFERENCING Clause
+• The word "old" in this code means two things: it is a value
+qualifier (like :NEW) and also a table name.
+• The code will work, but is confusing to read.
+• We don't have to use :OLD and :NEW.
+• We can use different qualifiers by including a REFERENCING
+clause.
+CREATE OR REPLACE TRIGGER log_emps
+AFTER UPDATE OF salary ON old FOR EACH ROW BEGIN
+INSERT INTO log_emp_table (who, when, which_employee,
+old_salary, new_salary)
+VALUES (USER, SYSDATE, :OLD.employee_id, :OLD.salary,
+:NEW.salary); END;
+72
+Using the REFERENCING Clause
+• FORMER and LATTER are called correlation-names.
+• They are aliases for OLD and NEW.
+• We can choose any correlation names we like (for example TOM
+and MARY) as long as they are not reserved words.
+• The REFERENCING clause can be used only in row triggers.
+CREATE OR REPLACE TRIGGER log_emps
+AFTER UPDATE OF salary ON old
+REFERENCING OLD as former NEW as latter FOR EACH ROW BEGIN
+INSERT INTO log_emp_table (who, when, which_employee,
+old_salary, new_salary) VALUES (USER, SYSDATE,
+:former.employee_id,
+:former.salary, :latter.salary);
+END;
+73
+Using the WHEN clause
+• Look at this trigger code. It records salary changes only if the
+new salary is greater than the old salary.
+CREATE OR REPLACE TRIGGER restrict_salary
+AFTER UPDATE of salary ON employees FOR EACH ROW
+BEGIN
+IF :NEW.salary > :OLD.salary THEN INSERT INTO
+log_emp_table(who,when,which_employee,old_salary,new_salary)
+VALUES(USER,SYSDATE,:OLD.employee_id,:OLD.salary,:NEW.salary);
+END IF;
+END;
+•The whole trigger body is a single IF statement.
+•In real life, this could be many lines of code, including CASE
+statements, loops, and other constructs.
+74
+Using the WHEN clause
+• We can code our IF condition in the trigger header, just before
+the BEGIN clause.
+INSERT INTO log_emp_table
+(who,when,which_employee,old_salary,new_salary)
+VALUES(USER,SYSDATE,:OLD.employee_id,:OLD.salary,:NEW.salary);
+END;
+•This code is easier to read, especially if the trigger body is
+long and complex.
+•The WHEN clause can be used only with row triggers.
+CREATE OR REPLACE
+AFTER UPDATE of
+WHEN(NEW.salary
+BEGIN
+TRIGGER restrict_salary
+salary ON copy_employees FOR EACH ROW
+> OLD.salary)
+75
+INSTEAD OF Triggers
+• Underlying tables cannot be updated using a Complex View
+(for example a view based on a join).
+• Suppose the EMP_DETAILS view is a complex view based on a
+join of EMPLOYEES and DEPARTMENTS.
+• The following SQL statement fails:
+• You can overcome this by creating an INSTEAD OF trigger
+that updates the underlying tables directly instead of
+trying (and failing) to update the view.
+• INSTEAD OF triggers are always row triggers.
+INSERT INTO emp_details
+VALUES (9001, 'ABBOTT'
+, 3000, 10, 'Administration');
+76
+An Example of an INSTEAD OF Trigger
+• Perform the INSERT into the EMP_DETAILS view that is based
+on the NEW_EMPS and NEW_DEPTS tables:
+INSTEAD OF INSERT
+into EMP_DETAILS
+INSERT into NEW_EMPS UPDATE NEW_DEPTS
+1
+2 3
+…
+INSERT INTO emp_details
+VALUES (9001, 'ABBOTT', 3000, 10, 'Administration');
+77
+Creating an INSTEAD OF Trigger
+• Step 1: Create the tables and the Complex View:
+CREATE TABLE new_emps AS
+SELECT employee_id,last_name,salary,department_id
+FROM employees;
+CREATE TABLE new_depts AS
+SELECT d.department_id,d.department_name,
+sum(e.salary) dept_sal
+FROM employees e, departments d
+WHERE e.department_id = d.department_id GROUP BY
+d.department_id,d.department_name;
+CREATE VIEW emp_details AS
+SELECT e.employee_id, e.last_name, e.salary,
+e.department_id, d.department_name
+FROM new_emps e, new_depts d
+WHERE e.department_id = d.department_id;
+78
+Creating an INSTEAD OF Trigger
+• Step 2: Create the INSTEAD OF Trigger:
+CREATE OR REPLACE TRIGGER new_emp_dept
+INSTEAD OF INSERT ON emp_details
+BEGIN
+INSERT INTO new_emps
+VALUES (:NEW.employee_id, :NEW.last_name,:NEW.salary,
+:NEW.department_id);
+UPDATE new_depts
+SET dept_sal = dept_sal + :NEW.salary
+WHERE department_id = :NEW.department_id;
+END;
+• INSTEAD OF triggers are always row triggers.
+79
+Reference
+PL/SQL User's Guide and Reference, Release 9.0.1
+Part No. A89856-01
+Copyright © 1996, 2001, Oracle Corporation. All rights
+reserved.
+Primary Authors: Tom Portfolio, John Russell
+Oracle Academy
+PLSQL S13L2 Creating DML Triggers : Part 1
+PLSQL S13L3 Creating DML Triggers : Part II
+Copyright © 2019, Oracle and/or its affiliates. All rights reserved.
+80
+
+
+
+INTENDED LEARNING OUTCOME
+• Create a trigger for a DDL statement
+• Create a trigger for a database event
+84
+What are DDL and Database Event Triggers?
+• DDL triggers are fired by DDL statements: CREATE, ALTER, or
+DROP.
+• Database Event triggers are fired by non-SQL events in the
+database, for example:
+– A user connects to, or disconnects from, the database.
+– The DBA starts up, or shuts down, the database.
+– A specific exception is raised in a user session.
+85
+Creating Triggers on DDL Statements Syntax
+• ON DATABASE fires the trigger for DDL on all schemas in the
+database
+• ON SCHEMA fires the trigger only for DDL on objects in your
+own schema
+CREATE [OR REPLACE] TRIGGER trigger_name Timing
+[ddl_event1 [OR ddl_event2 OR ...]] ON {DATABASE|SCHEMA}
+trigger_body
+86
+Example of a DDL Trigger
+• You want to write a log record every time a new
+database object is created in your schema:
+• The trigger fires whenever any type of object is created.
+• You cannot create a DDL trigger that refers to a specific
+database object.
+CREATE OR REPLACE TRIGGER log_create_trigg
+AFTER CREATE ON SCHEMA
+BEGIN
+INSERT INTO log_table VALUES (USER, SYSDATE);
+END;
+87
+A Second Example of a DDL Trigger
+• You want to prevent any objects being dropped from your
+schema.
+• The trigger fires whenever any (type of) object is dropped.
+• Again, you cannot create a DDL trigger that refers to a specific
+database object.
+CREATE OR REPLACE TRIGGER prevent_drop_trigg
+BEFORE DROP ON SCHEMA
+BEGIN
+RAISE_APPLICATION_ERROR (-20203, 'Attempted drop – failed’);
+END;
+88
+Creating Triggers on Database Events Syntax
+• ON DATABASE fires the trigger for events on all sessions in the
+database.
+• ON SCHEMA fires the trigger only for your own sessions.
+CREATE [OR REPLACE] TRIGGER trigger_name
+Timing [database_event1 [OR database_event2 OR ...]]
+ON {DATABASE|SCHEMA}
+trigger_body
+89
+Creating Triggers on Database Events Guidelines
+10
+• Remember, you cannot use INSTEAD OF with Database Event
+triggers.
+• You can define triggers to respond to such system events as
+LOGON, SHUTDOWN, and even SERVERERROR.
+• Database Event triggers can be created ON DATABASE or ON
+SCHEMA, except that ON SCHEMA cannot be used with
+SHUTDOWN and STARTUP events.
+90
+Example 1: LOGON and LOGOFF Triggers
+CREATE OR REPLACE TRIGGER logon_trig
+AFTER LOGON ON SCHEMA
+BEGIN
+INSERT INTO log_trig_table(user_id,log_date,action)
+VALUES (USER, SYSDATE, 'Logging on');
+END;
+CREATE OR REPLACE TRIGGER logoff_trig
+BEFORE LOGOFF ON SCHEMA
+BEGIN
+INSERT INTO log_trig_table(user_id,log_date,action)
+VALUES (USER, SYSDATE, 'Logging off');
+END;
+91
+Example 2: A SERVERERROR Trigger
+• You want to keep a log of any ORA-00942 errors that occur
+in your sessions:
+• If the IS_SERVERERROR … conditional test is omitted, the trigger
+will fire when any Oracle server error occurs.
+CREATE OR REPLACE TRIGGER servererror_trig
+AFTER SERVERERROR ON SCHEMA
+BEGIN
+IF (IS_SERVERERROR (942)) THEN
+INSERT INTO error_log_table ... END IF;
+END;
+92
+CALL Statements in a Trigger
+• There is no END; statement, and no semicolon at
+the end of the CALL statement.
+CREATE [OR REPLACE] TRIGGER trigger_name timing
+event1 [OR event2 OR event3]
+ON table_name
+[REFERENCING OLD AS old | NEW AS new] [FOR EACH ROW]
+[WHEN condition]
+CALL procedure_name
+CREATE OR REPLACE TRIGGER log_employee BEFORE INSERT ON
+EMPLOYEES
+CALL log_execution
+93
+Mutating Tables and Row Triggers
+• A mutating table is a table that is currently being modified by
+a DML statement.
+• A row trigger cannot SELECT from a mutating table, because
+it would see an inconsistent set of data (the data in the table
+would be changing while the trigger was trying to read it).
+• However, a row trigger can SELECT from a different table if
+needed.
+• This restriction does not apply to DML statement triggers,
+only to DML row triggers.
+94
+Mutating Tables and Row Triggers
+To avoid mutating table errors:
+•A row-level trigger must not query or modify a mutating table.
+•A statement-level trigger must not query or modify a mutating
+table if the trigger is fired as the result of a CASCADE delete.
+•Reading and writing data using triggers is subject to certain rules.
+The restrictions apply only to row triggers, unless a statement
+trigger is fired as a result of ON DELETE CASCADE.
+95
+Mutating Tables and Row Triggers
+CREATE OR REPLACE TRIGGER emp_trigg
+AFTER INSERT OR UPDATE OR DELETE ON employees
+-- EMPLOYEES is the mutating table
+FOR EACH ROW BEGIN
+SELECT … FROM employees … -- is not allowed SELECT … FROM
+departments … -- is allowed
+… END;
+96
+Mutating Table: Example
+CREATE OR REPLACE TRIGGER check_salary
+BEFORE INSERT OR UPDATE OF salary,
+employees
+FOR EACH ROW DECLARE
+v_minsalary employees.salary%TYPE;
+v_maxsalary employees.salary%TYPE;
+BEGIN
+SELECT MIN(salary), MAX(salary)
+INTO v_minsalary, v_maxsalary FROM
+employees
+WHERE job_id = :NEW.job_id;
+IF :NEW.salary < v_minsalary OR
+:NEW.salary > v_maxsalary THEN
+job_id ON
+RAISE_APPLICATION_ERROR(-20505,'Out of range');
+END IF;
+END;
+97
+Mutating Table: Example
+UPDATE employees SET salary = 3400
+WHERE last_name = 'Davies';
+98
+More Possible Uses for Triggers
+• You should not create a trigger to do something that can easily
+be done in another way, such as by a check constraint or by
+suitable object privileges.
+• But sometimes you must create a trigger because there is no
+other way to do what is needed.
+• The following examples show just three situations where a
+trigger must be created.
+• There are many more!
+99
+Uses for Triggers: First Example
+• Database security (who can do what) is normally controlled by
+system and object privileges.
+• For example, user SCOTT needs to update EMPLOYEES rows:
+• But privileges alone cannot control when SCOTT is
+allowed to do this.
+• For that, we need a trigger:
+GRANT UPDATE ON employees TO scott;
+CREATE OR REPLACE TRIGGER weekdays_emp BEFORE UPDATE ON employees
+BEGIN
+IF (TO_CHAR (SYSDATE, 'DY') IN ('SAT','SUN')) THEN
+RAISE_APPLICATION_ERROR(-20506,'You may only change data during normal
+business hours.');
+END IF; END;
+20 100
+Uses for Triggers: Second Example
+• Database integrity (what DML is allowed) is normally
+controlled by constraints.
+• For example, every employee must have a salary of at least
+$500:
+ALTER TABLE employees ADD
+CONSTRAINT ck_salary CHECK (salary >= 500);
+•If a business rule states that employees' salaries can be raised
+but not lowered, this constraint will not prevent an employee's
+salary being lowered from $700 to $600.
+•For that, we need a row trigger.
+•The code for this is shown on the next slide.
+101
+Uses for Triggers: Second Example
+• Now we don't need the constraint any more.
+CREATE OR REPLACE TRIGGER check_salary
+BEFORE UPDATE of salary ON employees FOR EACH ROW
+WHEN(NEW.salary < OLD.salary OR NEW.salary < 500) BEGIN
+RAISE_APPLICATION_ERROR (-20508,'Do not decrease salary.');
+END;
+102
+Uses for Triggers: Second Example
+• Taking this example further, what if the minimum salary changes
+from time to time? Next year it may be $550, not $500. We
+don't want to drop and recreate the constraint every time.
+• We would create a single-row, single-column table which stores
+the minimum salary:
+CREATE TABLE minsal (min_salary NUMBER(8,2));
+INSERT INTO minsal (min_salary) VALUES (500);
+And later, if the minimum salary changes to $550, we simply:
+UPDATE minsal
+SET min_salary = 550;
+103
+Uses for Triggers: Second Example
+• Our trigger would be coded:
+CREATE OR REPLACE TRIGGER check_salary
+BEFORE UPDATE OF salary ON employees FOR EACH ROW
+DECLARE
+v_min_sal minsal%min_salary%TYPE;
+BEGIN
+SELECT min_salary INTO v_min_sal FROM minsal;
+IF :NEW.salary < v_min_sal OR :NEW.salary < :OLD.salary THEN
+RAISE_APPLICATION_ERROR (-20508,'Do not decrease salary.’);
+END IF;
+END;
+104
+Uses for Triggers: Third Example
+• You need to create a report showing the total salary
+bill for a department.
+• You can declare and use this cursor:
+...
+CURSOR tot_sals IS SELECT SUM(salary) FROM employees
+WHERE department_id = p_dept_id;
+...
+105
+Uses for Triggers: Third Example
+• But what if, in a large organization, there are 10,000
+employees in the department?
+• FETCHing 10,000 rows from the EMPLOYEES table may be too
+slow.
+• The next slides show a much faster way to do this.
+...
+CURSOR tot_sals IS SELECT SUM(salary) FROM employees
+WHERE department_id = p_dept_id;
+...
+106
+Uses for Triggers: Third Example
+• First, we add a new column to the DEPARTMENTS table to store
+the total salary bill for each department:
+• Populate this column with the current total dept salary:
+• A DML row trigger will keep this new column up to date when
+salaries are changed.
+ALTER TABLE DEPARTMENTS
+ADD total_salary NUMBER(12,2);
+UPDATE departments d SET total_salary =
+(SELECT SUM(salary) FROM employees
+WHERE department_id = d.department_id);
+107
+Uses for Triggers: Third Example
+CREATE OR REPLACE PROCEDURE increment_salary (p_id IN NUMBER,
+p_new_sal IN NUMBER) IS
+BEGIN
+UPDATE copy_departments
+SET total_salary = total_salary + NVL(p_new_sal,0) WHERE
+department_id = p_id;
+END increment_salary;
+CREATE OR REPLACE TRIGGER compute_salary
+AFTER INSERT
+ON employees
+BEGIN
+IF DELETING
+OR UPDATE OF salary OR DELETE
+FOR EACH ROW
+THEN increment_salary
+(:OLD.department_id,(:OLD.salary * -1));
+ELSIF UPDATING THEN increment_salary
+(:NEW.department_id,(:NEW.salary - :OLD.salary));
+ELSE increment_salary
+(:NEW.department_id,:NEW.salary);
+END IF; END;
+108
+Reference
+PL/SQL User's Guide and Reference, Release 9.0.1
+Part No. A89856-01
+Copyright © 1996, 2001, Oracle Corporation. All rights
+reserved.
+Primary Authors: Tom Portfolio, John Russell
+Oracle Academy
+PLSQL S13L4 Creating DDL and Database Event Triggers
+Copyright © 2019, Oracle and/or its affiliates. All rights reserved.
+109
+
+
+
+
+
+
+
+    </p>
+    
+    <div class="search-container">
+        <input type="text" id="search" placeholder="Search text..." oninput="searchText()">
+        <button onclick="prevMatch()">⬅ Prev</button>
+        <button onclick="nextMatch()">Next ➡</button>
+    </div>
+
+    <script>
+        let matches = [];
+        let currentIndex = -1;
+
+        function searchText() {
+            let input = document.getElementById('search').value;
+            let content = document.getElementById('content');
+            let text = content.innerText;
+            
+            if (input.trim() === "") {
+                content.innerHTML = text;
+                matches = [];
+                currentIndex = -1;
+                return;
+            }
+            
+            let regex = new RegExp(input, "gi");
+            let highlightedText = text.replace(regex, (match, offset) => {
+                matches.push(offset);
+                return `<span class="highlight">${match}</span>`;
+            });
+            content.innerHTML = highlightedText;
+            
+            if (matches.length > 0) {
+                currentIndex = 0;
+                scrollToMatch();
+            }
+        }
+
+        function scrollToMatch() {
+            let highlights = document.querySelectorAll('.highlight');
+            if (highlights.length > 0 && currentIndex >= 0) {
+                highlights[currentIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        function nextMatch() {
+            if (matches.length > 0) {
+                currentIndex = (currentIndex + 1) % matches.length;
+                scrollToMatch();
+            }
+        }
+
+        function prevMatch() {
+            if (matches.length > 0) {
+                currentIndex = (currentIndex - 1 + matches.length) % matches.length;
+                scrollToMatch();
+            }
+        }
+    </script>
+</body>
+</html>
